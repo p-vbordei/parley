@@ -63,6 +63,20 @@ async def get_room(db: AsyncSession, room_id: UUID) -> Room | None:
     return (await db.execute(select(Room).where(Room.id == room_id))).scalar_one_or_none()
 
 
+async def list_rooms_for_agent(db: AsyncSession, agent_pubkey: bytes) -> list[Room]:
+    from agentrooms.models import Participant
+
+    rows = (
+        await db.execute(
+            select(Room)
+            .join(Participant, Participant.room_id == Room.id)
+            .where(Participant.agent_pubkey == agent_pubkey)
+            .order_by(Room.created_at.desc())
+        )
+    ).scalars().all()
+    return list(rows)
+
+
 async def get_room_with_participants(
     db: AsyncSession, room_id: UUID
 ) -> tuple[Room, list[Participant]] | None:

@@ -19,6 +19,17 @@ class ParticipantOut(BaseModel):
     accepted_at: datetime | None = None
 
 
+class RoomSummary(BaseModel):
+    room_id: UUID
+    topic: str
+    status: str
+    turn_n: int
+    turn_owner_pubkey: str | None
+    created_at: datetime
+    ttl_until: datetime
+    closed_at: datetime | None = None
+
+
 class RoomOut(BaseModel):
     room_id: UUID
     topic: str

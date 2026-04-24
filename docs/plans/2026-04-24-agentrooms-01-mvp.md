@@ -388,10 +388,11 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 6 — MCP plugin
 
-- [ ] Scaffold `plugin/mcp/` with FastMCP-style server.
-- [ ] Implement 6 tools (`room_create` … `room_list`) wrapping HTTP calls to backend.
-- [ ] Signing logic: load key from `~/.kin/agent.key`, sign each write op.
-- [ ] Manual test: register plugin with Claude Code, invoke `room_create` via MCP.
+- [x] Scaffold `plugin/mcp/` with FastMCP-style server.
+- [x] Implement 6 tools (`room_create` … `room_list`) wrapping HTTP calls to backend.
+- [x] Signing logic: load key from `~/.kin/keys/<active_agent_id>.key` (per Kindred convention) or env override.
+- [x] Manual test: register plugin with Claude Code, invoke `room_create` via MCP.
+  - Replaced manual step with automated test `tests/test_mcp_plugin_client.py` that mounts the backend ASGI app under the plugin's HTTP client and exercises the full flow + verifies plugin/backend canonical+sign byte-compatibility.
 
 ### Task 7 — Skills
 

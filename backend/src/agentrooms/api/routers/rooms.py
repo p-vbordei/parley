@@ -16,6 +16,7 @@ from agentrooms.api.schemas.rooms import (
     ParticipantOut,
     RoomCreateRequest,
     RoomOut,
+    RoomSummary,
 )
 from agentrooms.crypto import canonical_json, verify
 from agentrooms.services import participants as participants_svc
@@ -105,6 +106,25 @@ async def create_room(
     parts = await participants_svc.list_for_room(db, room.id)
     await db.commit()
     return _to_room_out(room, parts)
+
+
+@router.get("", response_model=list[RoomSummary])
+async def list_rooms(db: DbDep, agent_pubkey: PubkeyDep) -> list[RoomSummary]:
+    """Mine-only: rooms where the caller is a participant."""
+    rows = await rooms_svc.list_rooms_for_agent(db, agent_pubkey)
+    return [
+        RoomSummary(
+            room_id=r.id,
+            topic=r.topic,
+            status=r.status,
+            turn_n=r.turn_n,
+            turn_owner_pubkey=_hex(r.turn_owner_pubkey),
+            created_at=r.created_at,
+            ttl_until=r.ttl_until,
+            closed_at=r.closed_at,
+        )
+        for r in rows
+    ]
 
 
 @router.get("/{room_id}", response_model=RoomOut)
