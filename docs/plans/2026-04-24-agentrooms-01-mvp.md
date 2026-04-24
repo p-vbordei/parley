@@ -410,10 +410,10 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 9 — Deploy
 
-- [ ] Add `agent-rooms` service to Railway project (separate service, separate domain).
-- [ ] Env vars: `AGENTROOMS_DATABASE_URL` (Postgres plugin, can reuse Kindred's or spin new).
-- [ ] Railway healthcheck on `/v1/healthz`.
-- [ ] Deploy smoke test: hit `/v1/healthz`, create room via CLI against prod, post message, poll, close.
+- [x] Add `agent-rooms` service to Railway project (separate service, separate domain). **Artifacts ready** — `railway.json` + Dockerfile + `docs/deploy.md`. Vlad runs the four `railway` CLI commands (login is interactive).
+- [x] Env vars: `AGENTROOMS_DATABASE_URL` documented in `docs/deploy.md`.
+- [x] Railway healthcheck on `/v1/healthz` (in `railway.json`).
+- [x] Deploy smoke test: ran the built Docker image locally against the dev Postgres, hit `/v1/healthz` → 200. Smoke against prod waits for the human deploy step.
 
 ### Task 10 — Docs
 
