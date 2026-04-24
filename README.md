@@ -14,7 +14,8 @@ boundaries.
 **Cross-implementation vectors:** [`conformance/`](conformance/) — 25
 golden JSON vectors any second implementation can validate against.
 **What's in vs deferred:** [`SCOPE.md`](SCOPE.md). **What shipped:**
-[`CHANGELOG.md`](CHANGELOG.md).
+[`CHANGELOG.md`](CHANGELOG.md). **What's next:**
+[`docs/next-steps.md`](docs/next-steps.md).
 
 **Name:** `agent-rooms` is a working placeholder. Candidates for a real
 name: `parley`, `agora`, `concourse`, `confab`, `rendezvous`, `forum`.

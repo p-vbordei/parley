@@ -1,0 +1,156 @@
+# Next steps
+
+Checkpoint after v0.1.0. Read top-down — items are roughly in the order
+you'd want to do them.
+
+State at this point: 51 tests green, 25 conformance vectors green,
+[`SPEC.md`](../SPEC.md) v0.1.0 DRAFT published, CI workflow committed,
+demo end-to-end working. `v0.1.0` tag exists locally, **not pushed**.
+
+## 0 · Before anything else — you, not me
+
+These four items are user-owned. They need human judgement or interactive
+auth that a code-writing session cannot supply.
+
+- [ ] **Pick the real name.** `agent-rooms` is still the placeholder.
+      Candidates: `parley`, `agora`, `concourse`, `confab`, `rendezvous`,
+      `forum`. My read: **parley** — short, semantically on-point for
+      inter-party negotiation, low collision. Decide, then the rename is
+      a single focused session covering:
+      - folder: `/Users/vladbordei/Documents/Development/PERSONAL/agent-rooms/`
+      - Python packages: `agentrooms`, `agentrooms_mcp`, `agentrooms_cli`
+      - Railway service name in [`backend/railway.json`](../backend/railway.json)
+      - Docker container name in [`backend/docker-compose.yml`](../backend/docker-compose.yml)
+      - Plugin ID in [`plugin/.claude-plugin/plugin.json`](../plugin/.claude-plugin/plugin.json)
+      - Env var prefix `AGENTROOMS_` in [`backend/src/agentrooms/config.py`](../backend/src/agentrooms/config.py)
+      - Every doc / README / CHANGELOG / SCOPE reference
+
+- [ ] **`railway login && railway up`.** [`docs/deploy.md`](deploy.md)
+      has the four commands. Interactive auth + your billing account —
+      I cannot do this for you.
+
+- [ ] **Smoke-test the plugin in a real Claude Code session.** Register
+      the plugin, try a bilingual trigger phrase (`deschide o cameră cu
+      …` or `open a room with …`). This is the last unchecked item in
+      Task 7 of the MVP plan.
+
+- [ ] **Push when you're happy.** `git push && git push --tags`. I held
+      these back per the release protocol; tag `v0.1.0` exists only
+      locally right now.
+
+## 1 · v0.1.x — small hygiene items I can take next session
+
+Low-risk, high-value cleanups. Each ~1 focused session. Pick any order.
+
+- [ ] **README CI badge.** After first push, add a GitHub Actions badge
+      at the top of [`README.md`](../README.md). Blocked on repo URL
+      being known (waits on rename + push).
+
+- [ ] **Conformance README stanza for non-Python implementations.** A
+      Rust / Go / TS cookbook showing the exact imports and assertions
+      to run the same JSON vectors. Short — half a page each.
+
+- [ ] **Rate-limit the conformance runner.** Vectors can't grow forever;
+      add a check that full run stays under a budget (currently ~0.1s;
+      budget 5s). Catches bloat early.
+
+- [ ] **Turn the Phase-2 tickets in [`SCOPE.md`](../SCOPE.md) into
+      actual issues** once the repo has a public URL. One per row in
+      the DEFERRED table.
+
+## 2 · v0.2 — pick ONE of these, not all
+
+Each is a substantial piece. The right v0.2 is whichever answers the
+question "what's the first thing a second organization asks for?"
+
+### 2a · Replay protection on `create_room` (small, high value)
+
+The cleanest win. Add `created_at` (or `nonce`) to the signed payload
+for `POST /v1/rooms`, `/accept`, `/close`. Enforce ±60s freshness like
+messages already do. Removes the last genuinely exploitable behavior
+from SPEC §10.2 (duplicate-room replay).
+
+*Effort: ~1 day incl. spec bump, new vectors, new tests.*
+*Risk: bumps SPEC — explicit v0.2 scope change, not retrofit-compatible.*
+
+### 2b · Signed `GET` requests (medium)
+
+Upgrade reads from "pubkey-claim auth" to either per-request signature
+or a short-lived session token. Closes the other §10.2 boundary.
+
+*Effort: ~3 days. Client plumbing is the bulk.*
+*Risk: breaks every existing GET caller until they sign. Ship alongside
+a `Accept-Version` header for graceful migration.*
+
+### 2c · Federation between hubs (large, defining)
+
+The real phase-2 prize. Options:
+- **Nostr-style event envelope.** Signed events replicated across
+  relays. Our signed-payload shapes would need to become self-contained
+  events (include signer pubkey, event kind). Aligns with Nostr's proven
+  dumb-relay gossip at scale.
+- **ActivityPub-style S2S push.** More structure, more ceremony, harder
+  for a small team to run.
+
+Read [`docs/research/2026-04-24-prior-art-scan.md`](research/2026-04-24-prior-art-scan.md)
+before committing to a direction.
+
+*Effort: ~2-4 weeks. This is a research-first piece.*
+*Risk: commits to a wire format that will be hard to change later.*
+
+### 2d · WebSocket push (medium)
+
+Replace polling with push. Should be gated on a real signal — don't do
+this until you observe a room generating >1 poll/sec, because polling
+is genuinely fine at current scale. When the signal arrives, Bun's
+native WebSocket or FastAPI's WebSocketRoute is boring and cheap.
+
+*Effort: ~1 week.*
+*Risk: plugin client, CLI, and 4 skills all assume polling. Each gets a
+new code path.*
+
+## 3 · Longer-term — not a v0.2 candidate
+
+- **A2A Signed Agent Cards** adoption at the identity layer. Compatible
+  with our design, not required for the core rooms primitive. Revisit
+  after federation lands.
+- **Pubkey rotation / revocation.** Likely via a signed "rotate"
+  message that binds the old pubkey to its successor. Low priority
+  until a real user asks.
+- **End-to-end encryption of `body`.** Transparent-transcript is a
+  *feature* of v0.1. Encryption is a future opt-in, not a default.
+- **Web dashboard for humans.** Drive via Claude Code, CLI, or Kindred.
+  Not a product gap.
+- **Rate limiting.** `max_turns` + `ttl_until` are the natural backpressure
+  for v0.1. Add a token bucket per pubkey only when a hub has multiple
+  noisy tenants.
+
+## 4 · What we decided NOT to do (ever)
+
+Kept here so scope creep has a place to die on arrival.
+
+- Configurable auth providers (OAuth/OIDC/API keys). Violates the
+  "dumb relay + signed messages" philosophy.
+- Pluggable storage backends. An abstraction layer for a SQLite option
+  is a YAGNI trap.
+- Plugin system for custom room types. Variants should be skills, not
+  primitives.
+- GraphQL API. REST/JSON fits Claude Code plugin affordances with a
+  smaller surface.
+- Server-side LLM features (auto-reply, classification). Intelligence
+  lives in skills.
+
+## 5 · Health checks for future-me
+
+Before shipping any v0.2 work, re-confirm:
+
+- [ ] All [`SPEC.md`](../SPEC.md) §10.1 defenses still pass their
+      tests in `backend/tests/test_security_boundaries.py`.
+- [ ] All [`conformance/vectors/`](../conformance/vectors/) still pass
+      `python conformance/run.py` and `pytest tests/test_conformance.py`.
+- [ ] `examples/demo.py` still runs end-to-end with one command on a
+      fresh clone.
+- [ ] [`CHANGELOG.md`](../CHANGELOG.md) has a new `[0.2.0]` entry before
+      tagging.
+- [ ] [`SPEC.md`](../SPEC.md) banner flipped correctly (DRAFT → 1.0 at
+      the point we commit to wire-format stability).
