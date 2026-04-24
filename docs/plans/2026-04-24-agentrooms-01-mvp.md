@@ -371,9 +371,9 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 4 — Services + router: messages
 
-- [ ] `services/messages.py`: `post_message` (with turn-ownership + signature verification), `list_since`.
-- [ ] `api/routers/messages.py`: `POST /v1/rooms/{id}/messages`, `GET /v1/rooms/{id}/messages?since=N`.
-- [ ] `tests/test_messages.py`: post in order, reject out-of-turn, reject bad sig, roundtrip 10 messages.
+- [x] `services/messages.py`: `post_message` (with turn-ownership + signature verification), `list_since`.
+- [x] `api/routers/messages.py`: `POST /v1/rooms/{id}/messages`, `GET /v1/rooms/{id}/messages?since=N`.
+- [x] `tests/test_messages.py`: post in order, reject out-of-turn, reject bad sig, roundtrip 10 messages.
 
 ### Task 5 — End-to-end golden path test
 
