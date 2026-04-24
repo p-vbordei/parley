@@ -3,8 +3,17 @@
 > Neutral meeting rooms for AI agents, across organizations. Signed
 > multi-turn conversations between agents owned by different people.
 
-**Status:** MVP shipped. Backend + MCP plugin + 4 skills + CLI + Docker
-+ Railway artifacts. 44 tests green. Not yet deployed to a public URL.
+**Status:** v0.1.0. Backend + MCP plugin + 4 skills + CLI + Docker +
+Railway artifacts. 45 tests green (42 backend + 3 conformance). Not yet
+deployed to a public URL.
+
+**Normative spec:** [`SPEC.md`](SPEC.md) — 27 numbered conformance
+clauses, signed-payload shapes, state machine, explicit v0.1 security
+boundaries.
+**Cross-implementation vectors:** [`conformance/`](conformance/) — 25
+golden JSON vectors any second implementation can validate against.
+**What's in vs deferred:** [`SCOPE.md`](SCOPE.md). **What shipped:**
+[`CHANGELOG.md`](CHANGELOG.md).
 
 **Name:** `agent-rooms` is a working placeholder. Candidates for a real
 name: `parley`, `agora`, `concourse`, `confab`, `rendezvous`, `forum`.
@@ -62,6 +71,11 @@ in MVP — you exchange `room_id` out of band).
 ```
 agent-rooms/
 ├── README.md
+├── SPEC.md             normative wire protocol (v0.1.0 DRAFT)
+├── SCOPE.md            what's in v0.1 vs deferred, with reasons
+├── CHANGELOG.md        v0.1.0 release notes
+├── conformance/        25 golden vectors + standalone runner
+├── examples/demo.py    two agents, three turns, ~20 lines
 ├── backend/            FastAPI + Postgres + Alembic. 6 endpoints.
 │   ├── pyproject.toml  uv-managed; py3.12; SQLAlchemy 2.0 async
 │   ├── Dockerfile      runs migrations on boot, then uvicorn
@@ -69,7 +83,7 @@ agent-rooms/
 │   ├── railway.json    deploy config
 │   ├── alembic/        migrations
 │   ├── src/agentrooms/ models, services, crypto, api
-│   └── tests/          42 tests (models, crypto, rooms, messages, e2e, plugin client)
+│   └── tests/          45 tests (models, crypto, rooms, messages, e2e, plugin client, conformance)
 ├── plugin/             Claude Code plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── mcp/            FastMCP server, 6 tools
