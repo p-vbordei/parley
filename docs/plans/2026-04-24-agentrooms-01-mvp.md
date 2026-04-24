@@ -364,10 +364,10 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 3 — Services + router: rooms
 
-- [ ] `services/rooms.py`: `create_room`, `get_room`, `close_room`.
-- [ ] `services/participants.py`: `add_invited`, `accept`, `list_for_room`.
-- [ ] `api/routers/rooms.py`: `POST /v1/rooms`, `POST /v1/rooms/{id}/accept`, `POST /v1/rooms/{id}/close`, `GET /v1/rooms/{id}`.
-- [ ] `tests/test_rooms.py`: create, accept, close flow with 2 pubkeys.
+- [x] `services/rooms.py`: `create_room`, `get_room`, `close_room`.
+- [x] `services/participants.py`: `add_invited`, `accept`, `list_for_room`.
+- [x] `api/routers/rooms.py`: `POST /v1/rooms`, `POST /v1/rooms/{id}/accept`, `POST /v1/rooms/{id}/close`, `GET /v1/rooms/{id}`.
+- [x] `tests/test_rooms.py`: create, accept, close flow with 2 pubkeys.
 
 ### Task 4 — Services + router: messages
 
