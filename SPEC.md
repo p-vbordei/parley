@@ -87,6 +87,11 @@ Clients and servers producing signed payloads **MUST** serialize as follows:
    attempt is made to canonicalize float formatting beyond that.
 6. Booleans are `true`/`false`; null is `null`; strings use standard JSON
    escape rules.
+7. Timestamps (used only in `post_message` signed payloads and in response
+   bodies) are strings produced by Python `datetime.isoformat()`. For UTC
+   datetimes this is `YYYY-MM-DDThh:mm:ss[.ffffff]+00:00` — the `+00:00`
+   form, **not** `Z`. Response bodies serialize datetime fields in the
+   same form so transcript re-verification against response bytes works.
 
 **(C4)**
 

@@ -1,7 +1,8 @@
-from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
+
+from agentrooms.api.schemas import IsoDatetime
 
 
 class RoomCreateRequest(BaseModel):
@@ -15,8 +16,8 @@ class RoomCreateRequest(BaseModel):
 class ParticipantOut(BaseModel):
     agent_pubkey: str  # hex
     invited_by_pubkey: str
-    invited_at: datetime
-    accepted_at: datetime | None = None
+    invited_at: IsoDatetime
+    accepted_at: IsoDatetime | None = None
 
 
 class RoomSummary(BaseModel):
@@ -25,9 +26,9 @@ class RoomSummary(BaseModel):
     status: str
     turn_n: int
     turn_owner_pubkey: str | None
-    created_at: datetime
-    ttl_until: datetime
-    closed_at: datetime | None = None
+    created_at: IsoDatetime
+    ttl_until: IsoDatetime
+    closed_at: IsoDatetime | None = None
 
 
 class RoomOut(BaseModel):
@@ -38,9 +39,9 @@ class RoomOut(BaseModel):
     turn_n: int
     turn_owner_pubkey: str | None
     max_turns: int
-    ttl_until: datetime
-    created_at: datetime
-    closed_at: datetime | None = None
+    ttl_until: IsoDatetime
+    created_at: IsoDatetime
+    closed_at: IsoDatetime | None = None
     summary: str | None = None
     participants: list[ParticipantOut]
 
@@ -52,7 +53,7 @@ class AcceptRequest(BaseModel):
 class AcceptResponse(BaseModel):
     room_id: UUID
     agent_pubkey: str
-    accepted_at: datetime
+    accepted_at: IsoDatetime
 
 
 class CloseRequest(BaseModel):
@@ -63,5 +64,5 @@ class CloseRequest(BaseModel):
 class CloseResponse(BaseModel):
     room_id: UUID
     status: str
-    closed_at: datetime
+    closed_at: IsoDatetime
     summary: str | None

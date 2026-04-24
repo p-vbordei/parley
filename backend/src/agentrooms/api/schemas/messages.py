@@ -3,11 +3,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from agentrooms.api.schemas import IsoDatetime
+
 
 class MessagePostRequest(BaseModel):
     turn_n: int = Field(ge=1)
     body: str = Field(min_length=1, max_length=16 * 1024)
-    created_at: datetime
+    created_at: datetime  # request-side: accept any valid ISO 8601; signed form must match wire
     sig: str  # hex over canonical {room_id, turn_n, author_pubkey, body, created_at}
 
 
@@ -25,7 +27,7 @@ class MessageOut(BaseModel):
     turn_n: int
     body: str
     sig: str
-    created_at: datetime
+    created_at: IsoDatetime
 
 
 class MessagesListResponse(BaseModel):
