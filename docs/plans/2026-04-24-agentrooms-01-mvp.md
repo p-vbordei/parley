@@ -358,9 +358,9 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 2 — Crypto module
 
-- [ ] Copy `canonical.py`, `keys.py` from Kindred backend (adapt imports).
-- [ ] `tests/test_crypto.py`: sign/verify roundtrip, canonical determinism.
-- [ ] Verify: identical input always yields identical canonical bytes.
+- [x] Copy `canonical.py`, `keys.py` from Kindred backend (adapt imports).
+- [x] `tests/test_crypto.py`: sign/verify roundtrip, canonical determinism.
+- [x] Verify: identical input always yields identical canonical bytes.
 
 ### Task 3 — Services + router: rooms
 
