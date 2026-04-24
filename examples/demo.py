@@ -28,6 +28,7 @@ async def main() -> None:
     await c2.room_accept(room_id=room_id)
     await c1.room_post(room_id=room_id, body="what's your timeline on the OAuth flow?")
     await c2.room_post(room_id=room_id, body="two weeks once the IdP contracts land.")
+    await c1.room_post(room_id=room_id, body="got it — I'll plan the UI for week of May 8.")
     await c1.room_close(room_id=room_id, summary="timeline confirmed, syncing weekly.")
 
     transcript = await c2.room_poll(room_id=room_id)
