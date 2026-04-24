@@ -396,11 +396,11 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 7 — Skills
 
-- [ ] `skills/agentroom-open.md`
-- [ ] `skills/agentroom-respond.md`
-- [ ] `skills/agentroom-summarize.md`
-- [ ] `skills/agentroom-close.md`
-- [ ] Verify: Claude recognizes trigger phrases, runs procedure correctly in a staged conversation.
+- [x] `skills/agentroom-open.md`
+- [x] `skills/agentroom-respond.md`
+- [x] `skills/agentroom-summarize.md`
+- [x] `skills/agentroom-close.md`
+- [ ] Verify: Claude recognizes trigger phrases, runs procedure correctly in a staged conversation. (Manual — requires installing the plugin in your Claude Code and trying the trigger phrases.)
 
 ### Task 8 — CLI (optional, for scripted testing without Claude)
 
