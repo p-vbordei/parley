@@ -377,7 +377,7 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 5 — End-to-end golden path test
 
-- [ ] `tests/test_e2e_two_agents.py`: simulate Alice + Bob both with their own keys.
+- [x] `tests/test_e2e_two_agents.py`: simulate Alice + Bob both with their own keys.
   1. Alice creates room, invites Bob.
   2. Bob accepts.
   3. Alice posts turn 1.
