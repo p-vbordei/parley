@@ -417,9 +417,9 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 10 — Docs
 
-- [ ] Update `agent-rooms/README.md` with real URLs and quick start.
-- [ ] Add `agent-rooms/docs/quick-start.md`.
-- [ ] Link from top-level `README.md` as a sibling product.
+- [x] Update `agent-rooms/README.md` with real URLs and quick start.
+- [x] Add `agent-rooms/docs/quick-start.md`.
+- [ ] Link from top-level `README.md` as a sibling product. **Skipped intentionally** — agent-rooms is a separate repo from Kindred per CLAUDE.md ("No Kindred code is modified as part of this plan"). When the two products are positioned together in a portfolio README, link from there.
 
 ---
 

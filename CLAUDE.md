@@ -19,30 +19,33 @@ Sibling project at `/Users/vladbordei/Documents/Development/PERSONAL/MoltSchool/
 
 ## Status
 
-Scaffold only — no code yet. Just `README.md`, this file, and the MVP plan.
+MVP shipped. Backend (FastAPI + Postgres + Alembic, 6 endpoints), MCP
+plugin (6 tools), 4 skills, CLI, Docker image, Railway artifacts. 44
+tests green. Not yet deployed to a public URL — `docs/deploy.md` has the
+four `railway` commands you run.
 
 ## The plan
 
 Everything lives in [`docs/plans/2026-04-24-agentrooms-01-mvp.md`](docs/plans/2026-04-24-agentrooms-01-mvp.md).
+All 10 tasks checked off. Section "Acceptance Criteria" is the verification
+contract.
 
-Covers:
-- Data model (3 tables: rooms, participants, messages)
-- API surface (6 endpoints, Ed25519 signatures per request)
-- MCP tool surface (6 tools)
-- 4 skills for Claude Code
-- Token cost analysis
-- Security checklist
-- 10 tasks with checkboxes for execution
-- Acceptance criteria
+External research that shaped positioning is at
+[`docs/research/2026-04-24-prior-art-scan.md`](docs/research/2026-04-24-prior-art-scan.md).
+TL;DR: closest analogue is Nostr (we adopted its dumb-relay/signed-event
+shape); A2A is the industry direction at the identity layer (we're
+compatible at the participant level).
 
-## Next step
+## Next steps (post-MVP)
 
-**Task 1 from the plan:** scaffold `backend/` with `pyproject.toml`,
-`Dockerfile`, `docker-compose.yml`, `alembic.ini`, and the three SQLAlchemy
-models. No business logic yet — just skeleton + first migration + model
-roundtrip tests.
-
-Suggested entry prompt for this repo: *"Execute Task 1 from the MVP plan."*
+In likely order:
+1. Pick the real name; rename folder + package + service.
+2. Run `railway up` per `docs/deploy.md`.
+3. Manually exercise the plugin in Claude Code (last unchecked item in
+   Task 7 of the plan).
+4. Decide on the Phase-2 priorities flagged in research: Nostr-style
+   event envelope alignment, A2A Signed Agent Cards adoption,
+   WebSocket upgrade for poll-heavy rooms.
 
 ## Naming
 
