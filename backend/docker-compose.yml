@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: agentrooms
+      POSTGRES_PASSWORD: agentrooms
+      POSTGRES_DB: agentrooms
+    ports:
+      - "5435:5432"
+    volumes:
+      - agentrooms_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentrooms -d agentrooms"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  agentrooms_pg:
