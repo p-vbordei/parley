@@ -1,0 +1,51 @@
+[
+  {
+    "name": "valid_baseline",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline?\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":1}",
+    "sig_hex": "1d5b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af71706",
+    "must_verify": true,
+    "note": "the known-good signature must verify"
+  },
+  {
+    "name": "flipped_first_byte_of_sig",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline?\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":1}",
+    "sig_hex": "015b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af71706",
+    "must_verify": false,
+    "note": "any bit-flip in the 64-byte signature must fail"
+  },
+  {
+    "name": "truncated_sig",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline?\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":1}",
+    "sig_hex": "1d5b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af717",
+    "must_verify": false,
+    "note": "sig shorter than 64 bytes must fail"
+  },
+  {
+    "name": "body_mutated_one_char",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline!\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":1}",
+    "sig_hex": "1d5b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af71706",
+    "must_verify": false,
+    "note": "any change to the canonical body invalidates the signature"
+  },
+  {
+    "name": "turn_n_bumped",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline?\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":2}",
+    "sig_hex": "1d5b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af71706",
+    "must_verify": false,
+    "note": "turn_n is inside the signed payload; bumping it invalidates the sig"
+  },
+  {
+    "name": "wire_reordered_keys_but_canonical_identical",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "non_canonical_wire_utf8": "{\"room_id\": \"00000000-0000-0000-0000-000000000001\", \"turn_n\": 1, \"author_pubkey\": \"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\", \"body\": \"what's the timeline?\", \"created_at\": \"2026-04-24T12:00:00+00:00\"}",
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline?\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":1}",
+    "sig_hex": "1d5b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af71706",
+    "must_verify": true,
+    "note": "wire bytes may arrive in any key order / whitespace; signature verifies against the CANONICAL bytes, which are identical."
+  }
+]

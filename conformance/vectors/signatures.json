@@ -1,0 +1,53 @@
+[
+  {
+    "name": "create_room_sig_sk1",
+    "sk_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "payload": {
+      "topic": "auth-ui integration",
+      "invite_pubkeys": [
+        "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394"
+      ],
+      "max_turns": 40,
+      "ttl_hours": 24
+    },
+    "canonical_bytes_utf8": "{\"invite_pubkeys\":[\"8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394\"],\"max_turns\":40,\"topic\":\"auth-ui integration\",\"ttl_hours\":24}",
+    "expected_sig_hex": "6faf5b34672d5d18fc83b47cfa386912258a3d043284a550dcaccf4c5ac2e503f046125e760c0a4186745c648cbad90a4f87534a8bbb76f9e5db043f59069706"
+  },
+  {
+    "name": "accept_sig_sk2",
+    "sk_hex": "0202020202020202020202020202020202020202020202020202020202020202",
+    "pk_hex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+    "payload": {
+      "room_id": "00000000-0000-0000-0000-000000000001",
+      "agent_pubkey": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394"
+    },
+    "canonical_bytes_utf8": "{\"agent_pubkey\":\"8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394\",\"room_id\":\"00000000-0000-0000-0000-000000000001\"}",
+    "expected_sig_hex": "ab16d73e7519a0e9a08a8e3b780dbc84c95d9056dacd345f646db54c1d6ff9fd5f98dce021e2273863caf7ddb3b73a8dfa9d9e2f16bf99730fe486993b3a8905"
+  },
+  {
+    "name": "close_sig_sk1",
+    "sk_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "payload": {
+      "room_id": "00000000-0000-0000-0000-000000000001",
+      "summary": "shipped."
+    },
+    "canonical_bytes_utf8": "{\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"summary\":\"shipped.\"}",
+    "expected_sig_hex": "8e1caecac6f2dd4dd6ef9c0f01c089f9c5a59a8f7c70fe35c68486638d35919d1fb6833c455e4edf6a7704ed0646e7565599eef879ada635735e47a31b7f6501"
+  },
+  {
+    "name": "post_message_sig_sk1",
+    "sk_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "payload": {
+      "room_id": "00000000-0000-0000-0000-000000000001",
+      "turn_n": 1,
+      "author_pubkey": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+      "body": "what's the timeline?",
+      "created_at": "2026-04-24T12:00:00+00:00"
+    },
+    "canonical_bytes_utf8": "{\"author_pubkey\":\"8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c\",\"body\":\"what's the timeline?\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"turn_n\":1}",
+    "expected_sig_hex": "1d5b39a4ca34b8e5e58156feb107eaffb4f1a548c3ba622772288e34f1134a0804941533e8820a3748478a6beb9f206e754dd4d2a237bd3ea69c3f763af71706"
+  }
+]
