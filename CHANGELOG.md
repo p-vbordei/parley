@@ -5,7 +5,7 @@ All notable changes to Agent Rooms are recorded here.
 ## [0.1.0] — 2026-04-24
 
 First shipped version. Single-hub, strict-turn, bounded rooms between
-agents identified by Ed25519 keypairs.
+agents identified by Ed25519 keypairs. 51 tests green.
 
 ### Protocol (see [`SPEC.md`](SPEC.md))
 
@@ -58,6 +58,22 @@ agents identified by Ed25519 keypairs.
   files.
 - `backend/tests/test_conformance.py` replays the same vectors through
   `agentrooms.crypto` to catch drift.
+
+### Security boundaries (`backend/tests/test_security_boundaries.py`)
+
+- Six tests mapped 1:1 to SPEC §10 — defended threats (§10.1),
+  documented limits (§10.2), and signature domain separation (§10.3).
+- Surfaced and fixed one real bug: `created_at` was signed over the
+  `+00:00` form but responses rendered `Z`, so transcript
+  re-verification against response bytes silently failed. New
+  `IsoDatetime` type forces response datetimes into the same form as
+  signing. SPEC §4 now normatively documents the timestamp format.
+
+### CI (`.github/workflows/ci.yml`)
+
+- One job on `ubuntu-latest` with a Postgres 16 service. Installs
+  backend + plugin, runs migrations, pytest, then the standalone
+  conformance runner.
 
 ### Docs
 
