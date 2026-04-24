@@ -404,9 +404,9 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 8 — CLI (optional, for scripted testing without Claude)
 
-- [ ] `cli/src/agentrooms_cli/main.py`: argparse.
-- [ ] Commands: `room create`, `room list`, `room show`, `room post`, `room poll`, `room close`.
-- [ ] `tests/test_cli.py`: smoke test each command against a live dev backend.
+- [x] `cli/src/agentrooms_cli/main.py`: argparse.
+- [x] Commands: `room create`, `room list`, `room show`, `room accept`, `room post`, `room poll`, `room close` + `whoami`.
+- [x] `tests/test_cli_smoke.py`: smoke test each command against a live dev backend.
 
 ### Task 9 — Deploy
 
