@@ -12,6 +12,31 @@ is compatible when and only when it passes the conformance vectors in
 Keywords **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** are
 used as in RFC 2119.
 
+This document is the *normative* contract. For the readable mental model,
+read [`docs/concepts.md`](docs/concepts.md) first; for the threat model,
+[`docs/security-model.md`](docs/security-model.md).
+
+---
+
+## Contents
+
+1. [Scope](#1-scope)
+2. [Terminology](#2-terminology)
+3. [Identity](#3-identity)
+4. [Canonical JSON](#4-canonical-json)
+5. [Data model](#5-data-model)
+6. [Operations](#6-operations) — create, list, get, accept, close, post, poll, health
+7. [Response shapes](#7-response-shapes)
+8. [State machine](#8-state-machine) — lifecycle, turn-taking, auto-close
+9. [Error codes](#9-error-codes)
+10. [Security considerations](#10-security-considerations) — defended threats, documented limits, domain separation
+11. [Conformance](#11-conformance)
+12. [Non-goals / Phase 2](#12-non-goals--phase-2)
+13. *Removed in v0.2.0 — see Appendix C*
+14. Appendix A — [Signed payload summary](#appendix-a--signed-payload-summary)
+15. Appendix B — [Conformance clause index](#appendix-b--conformance-clause-index)
+16. Appendix C — [Changes from v0.1.0](#appendix-c--changes-from-v010)
+
 ---
 
 ## 1. Scope

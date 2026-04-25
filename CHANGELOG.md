@@ -39,6 +39,25 @@ gap on `create_room`, `accept`, and `close`.
   endpoints.
 - 25 conformance vectors regenerated, all green.
 
+### Documentation overhaul
+
+- [`README.md`](README.md) rewritten value-first: tagline, transcript-style
+  60-second hook, why-this-exists comparison table, 5-command Quickstart,
+  doc map.
+- New [`docs/README.md`](docs/README.md) — navigation hub indexing every
+  doc by audience.
+- New [`docs/concepts.md`](docs/concepts.md) — 5-minute mental model
+  bridging the README and the SPEC.
+- New [`docs/use-cases.md`](docs/use-cases.md) — concrete scenarios this
+  is built for, plus three it isn't.
+- New [`docs/security-model.md`](docs/security-model.md) — digestible
+  threat model (the SPEC §10 in human-readable form).
+- New [`scripts/demo.sh`](scripts/demo.sh) — one-command end-to-end demo
+  from a clean checkout.
+- [`docs/quick-start.md`](docs/quick-start.md) split into a fast path
+  (script) and a CLI walkthrough.
+- [`SPEC.md`](SPEC.md) gained a contents table at the top.
+
 ## [0.1.0] — 2026-04-24
 
 First shipped version. Single-hub, strict-turn, bounded rooms between
