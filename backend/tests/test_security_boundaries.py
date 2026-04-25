@@ -7,7 +7,7 @@ changes behavior, the SPEC boundary moved and SPEC.md needs an update
 first.
 """
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from agentrooms.crypto import canonical_json, generate_keypair, sign, verify
 
@@ -16,7 +16,7 @@ def _hdr(pk: bytes) -> dict[str, str]:
     return {"X-Agent-Pubkey": pk.hex()}
 
 
-def _sign_create(sk, *, topic, invitees, max_turns=40, ttl_hours=24):
+def _sign_create(sk, *, topic, invitees, max_turns=40, ttl_hours=24, created_at):
     return sign(
         sk,
         canonical_json(
@@ -25,20 +25,27 @@ def _sign_create(sk, *, topic, invitees, max_turns=40, ttl_hours=24):
                 "invite_pubkeys": invitees,
                 "max_turns": max_turns,
                 "ttl_hours": ttl_hours,
+                "created_at": created_at,
             }
         ),
     ).hex()
 
 
-def _sign_accept(sk, *, room_id, agent_pk):
+def _sign_accept(sk, *, room_id, agent_pk, created_at):
     return sign(
-        sk, canonical_json({"room_id": str(room_id), "agent_pubkey": agent_pk.hex()})
+        sk,
+        canonical_json(
+            {"room_id": str(room_id), "agent_pubkey": agent_pk.hex(), "created_at": created_at}
+        ),
     ).hex()
 
 
-def _sign_close(sk, *, room_id, summary):
+def _sign_close(sk, *, room_id, summary, created_at):
     return sign(
-        sk, canonical_json({"room_id": str(room_id), "summary": summary})
+        sk,
+        canonical_json(
+            {"room_id": str(room_id), "summary": summary, "created_at": created_at}
+        ),
     ).hex()
 
 
@@ -60,12 +67,16 @@ def _sign_message(sk, *, room_id, turn_n, author_pk, body, created_at):
 async def _two_agent_room(client):
     sk_a, pk_a = generate_keypair()
     sk_b, pk_b = generate_keypair()
+    created_at = datetime.now(UTC).isoformat()
     body = {
         "topic": "t",
         "invite_pubkeys": [pk_b.hex()],
         "max_turns": 40,
         "ttl_hours": 24,
-        "sig": _sign_create(sk_a, topic="t", invitees=[pk_b.hex()]),
+        "created_at": created_at,
+        "sig": _sign_create(
+            sk_a, topic="t", invitees=[pk_b.hex()], created_at=created_at
+        ),
     }
     r = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
     assert r.status_code == 200
@@ -73,7 +84,7 @@ async def _two_agent_room(client):
 
 
 # ---------------------------------------------------------------------------
-# §10.1 — what v0.1 defends
+# §10.1 — what v0.1+ defends
 # ---------------------------------------------------------------------------
 
 
@@ -83,9 +94,13 @@ async def test_10_1_tampering_at_rest_is_detectable(client):
     history without invalidating stored sigs."""
     sk_a, pk_a, sk_b, pk_b, room_id = await _two_agent_room(client)
 
+    accept_at = datetime.now(UTC).isoformat()
     r = await client.post(
         f"/v1/rooms/{room_id}/accept",
-        json={"sig": _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b)},
+        json={
+            "created_at": accept_at,
+            "sig": _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b, created_at=accept_at),
+        },
         headers=_hdr(pk_b),
     )
     assert r.status_code == 200
@@ -118,8 +133,55 @@ async def test_10_1_tampering_at_rest_is_detectable(client):
 
 
 # ---------------------------------------------------------------------------
-# §10.2 — documented v0.1 limits (these are not bugs; they are boundaries)
+# §10.2 — replay protection (v0.2.0 added freshness windows)
 # ---------------------------------------------------------------------------
+
+
+async def test_10_2_create_room_rejects_stale_timestamp(client):
+    """v0.2.0: create_room signed payload includes created_at; ±60s
+    freshness is enforced. Capture-and-replay-later attacks are now
+    rejected. (Same-second replay within the window remains a residual
+    documented in SPEC §10.2.)"""
+    sk_a, pk_a = generate_keypair()
+    stale = (datetime.now(UTC) - timedelta(minutes=5)).isoformat()
+    body = {
+        "topic": "t",
+        "invite_pubkeys": [],
+        "max_turns": 40,
+        "ttl_hours": 24,
+        "created_at": stale,
+        "sig": _sign_create(sk_a, topic="t", invitees=[], created_at=stale),
+    }
+    r = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
+    assert r.status_code == 400, "stale create_room must be rejected with stale_timestamp"
+
+
+async def test_10_2_accept_rejects_stale_timestamp(client):
+    """v0.2.0: accept signed payload includes created_at; ±60s freshness
+    enforced."""
+    _, _, sk_b, pk_b, room_id = await _two_agent_room(client)
+    stale = (datetime.now(UTC) - timedelta(minutes=5)).isoformat()
+    sig = _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b, created_at=stale)
+    r = await client.post(
+        f"/v1/rooms/{room_id}/accept",
+        json={"created_at": stale, "sig": sig},
+        headers=_hdr(pk_b),
+    )
+    assert r.status_code == 400
+
+
+async def test_10_2_close_rejects_stale_timestamp(client):
+    """v0.2.0: close signed payload includes created_at; ±60s freshness
+    enforced."""
+    sk_a, pk_a, _, _, room_id = await _two_agent_room(client)
+    stale = (datetime.now(UTC) - timedelta(minutes=5)).isoformat()
+    sig = _sign_close(sk_a, room_id=room_id, summary=None, created_at=stale)
+    r = await client.post(
+        f"/v1/rooms/{room_id}/close",
+        json={"summary": None, "created_at": stale, "sig": sig},
+        headers=_hdr(pk_a),
+    )
+    assert r.status_code == 400
 
 
 async def test_10_2_read_authn_by_claim_only(client):
@@ -140,38 +202,45 @@ async def test_10_2_read_authn_by_claim_only(client):
     assert r.status_code == 403
 
 
-async def test_10_2_create_room_replay_creates_duplicate(client):
-    """POST /v1/rooms has no nonce or timestamp in its signed payload.
-    Re-submitting the identical signed body creates a second room.
-    Mitigation today: TLS. Phase-2: add freshness / dedup."""
+async def test_10_2_within_window_replay_remains_a_residual(client):
+    """v0.2.0 narrows the replay surface to a 60-second window: capture-and-
+    replay-later is gone, but replaying the EXACT signed body within ±60s
+    still creates duplicates for create_room. Documented residual in SPEC
+    §10.2; closing it requires a server-side nonce table (v0.3 candidate)."""
     sk_a, pk_a = generate_keypair()
+    created_at = datetime.now(UTC).isoformat()
     body = {
         "topic": "t",
         "invite_pubkeys": [],
         "max_turns": 40,
         "ttl_hours": 24,
-        "sig": _sign_create(sk_a, topic="t", invitees=[]),
+        "created_at": created_at,
+        "sig": _sign_create(sk_a, topic="t", invitees=[], created_at=created_at),
     }
     r1 = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
     r2 = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
     assert r1.status_code == 200 and r2.status_code == 200
     assert r1.json()["room_id"] != r2.json()["room_id"], (
-        "v0.1 limit: identical signed create_room payloads produce two distinct rooms"
+        "v0.2 residual: identical fresh create_room replays still produce two rooms"
     )
 
 
 async def test_10_2_accept_replay_is_idempotent(client):
-    """Accept has no nonce either, but replaying it is a no-op: the first
-    accept sets accepted_at; subsequent identical POSTs return the same
-    accepted_at without rotating the stored signature."""
+    """Accept replay: replaying the same fresh signed body is a no-op (the
+    first sets accepted_at; the second returns the same accepted_at)."""
     _, _, sk_b, pk_b, room_id = await _two_agent_room(client)
-    accept_sig = _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b)
+    created_at = datetime.now(UTC).isoformat()
+    accept_sig = _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b, created_at=created_at)
 
     r1 = await client.post(
-        f"/v1/rooms/{room_id}/accept", json={"sig": accept_sig}, headers=_hdr(pk_b)
+        f"/v1/rooms/{room_id}/accept",
+        json={"created_at": created_at, "sig": accept_sig},
+        headers=_hdr(pk_b),
     )
     r2 = await client.post(
-        f"/v1/rooms/{room_id}/accept", json={"sig": accept_sig}, headers=_hdr(pk_b)
+        f"/v1/rooms/{room_id}/accept",
+        json={"created_at": created_at, "sig": accept_sig},
+        headers=_hdr(pk_b),
     )
     assert r1.status_code == 200 and r2.status_code == 200
     assert r1.json()["accepted_at"] == r2.json()["accepted_at"], (
@@ -180,11 +249,15 @@ async def test_10_2_accept_replay_is_idempotent(client):
 
 
 async def test_10_2_double_close_is_rejected(client):
-    """Close has no nonce, but replaying it hits the already-closed guard
-    (HTTP 409). So close-replay is functionally harmless even without
-    cryptographic replay protection."""
+    """Close replay hits the already-closed guard (HTTP 409). So close-replay
+    is functionally harmless even within the freshness window."""
     sk_a, pk_a, _, _, room_id = await _two_agent_room(client)
-    close_body = {"summary": None, "sig": _sign_close(sk_a, room_id=room_id, summary=None)}
+    created_at = datetime.now(UTC).isoformat()
+    close_body = {
+        "summary": None,
+        "created_at": created_at,
+        "sig": _sign_close(sk_a, room_id=room_id, summary=None, created_at=created_at),
+    }
 
     r1 = await client.post(f"/v1/rooms/{room_id}/close", json=close_body, headers=_hdr(pk_a))
     r2 = await client.post(f"/v1/rooms/{room_id}/close", json=close_body, headers=_hdr(pk_a))
@@ -200,15 +273,16 @@ async def test_10_2_double_close_is_rejected(client):
 async def test_10_3_accept_sig_does_not_verify_as_close(client):
     """Every signed payload has a unique key set (§10.3 + Appendix A), so a
     signature produced for one operation cannot be replayed as another. The
-    close-sig verify uses canonical({'room_id', 'summary': null}); an
-    accept-sig produced over canonical({'room_id', 'agent_pubkey'}) has
-    different bytes and therefore fails verify."""
+    close-sig verify uses canonical({'room_id', 'summary', 'created_at'});
+    an accept-sig produced over canonical({'room_id', 'agent_pubkey',
+    'created_at'}) has different bytes and therefore fails verify."""
     sk_a, pk_a, _, _, room_id = await _two_agent_room(client)
-    accept_sig = _sign_accept(sk_a, room_id=room_id, agent_pk=pk_a)
+    created_at = datetime.now(UTC).isoformat()
+    accept_sig = _sign_accept(sk_a, room_id=room_id, agent_pk=pk_a, created_at=created_at)
 
     r = await client.post(
         f"/v1/rooms/{room_id}/close",
-        json={"summary": None, "sig": accept_sig},
+        json={"summary": None, "created_at": created_at, "sig": accept_sig},
         headers=_hdr(pk_a),
     )
     assert r.status_code == 401, "close must not accept a signature produced for accept"

@@ -21,6 +21,7 @@ from agentrooms.api.schemas.rooms import (
 from agentrooms.crypto import canonical_json, verify
 from agentrooms.services import participants as participants_svc
 from agentrooms.services import rooms as rooms_svc
+from agentrooms.services.messages import is_timestamp_fresh
 
 router = APIRouter(prefix="/v1/rooms", tags=["rooms"])
 
@@ -84,12 +85,16 @@ async def create_room(
     invitees = [_parse_pubkey_hex(p) for p in payload.invite_pubkeys]
     sig = _parse_sig_hex(payload.sig)
 
+    if not is_timestamp_fresh(payload.created_at):
+        raise errors.stale_timestamp()
+
     signed = canonical_json(
         {
             "topic": payload.topic,
             "invite_pubkeys": payload.invite_pubkeys,
             "max_turns": payload.max_turns,
             "ttl_hours": payload.ttl_hours,
+            "created_at": payload.created_at.isoformat(),
         }
     )
     if not verify(agent_pubkey, signed, sig):
@@ -147,7 +152,16 @@ async def accept_room(
     if p is None:
         raise errors.not_a_participant()
 
-    signed = canonical_json({"room_id": str(room_id), "agent_pubkey": agent_pubkey.hex()})
+    if not is_timestamp_fresh(payload.created_at):
+        raise errors.stale_timestamp()
+
+    signed = canonical_json(
+        {
+            "room_id": str(room_id),
+            "agent_pubkey": agent_pubkey.hex(),
+            "created_at": payload.created_at.isoformat(),
+        }
+    )
     if not verify(agent_pubkey, signed, sig):
         raise errors.bad_signature()
 
@@ -174,8 +188,15 @@ async def close_room(
     if agent_pubkey != room.creator_pubkey and agent_pubkey != room.turn_owner_pubkey:
         raise errors.not_a_participant()
 
+    if not is_timestamp_fresh(payload.created_at):
+        raise errors.stale_timestamp()
+
     signed = canonical_json(
-        {"room_id": str(room_id), "summary": payload.summary}
+        {
+            "room_id": str(room_id),
+            "summary": payload.summary,
+            "created_at": payload.created_at.isoformat(),
+        }
     )
     if not verify(agent_pubkey, signed, sig):
         raise errors.bad_signature()

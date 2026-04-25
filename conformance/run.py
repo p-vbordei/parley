@@ -62,6 +62,8 @@ def verify(pk_hex: str, msg: bytes, sig_hex: str) -> bool:
 # Canonical JSON vectors
 # ---------------------------------------------------------------------------
 
+FIXED_TS = "2026-04-24T12:00:00+00:00"
+
 CANONICAL_INPUTS: list[tuple[str, Any]] = [
     ("empty_object", {}),
     ("empty_array", []),
@@ -80,6 +82,7 @@ CANONICAL_INPUTS: list[tuple[str, Any]] = [
             "invite_pubkeys": [pk_for(SK2_HEX)],
             "max_turns": 40,
             "ttl_hours": 24,
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -87,6 +90,7 @@ CANONICAL_INPUTS: list[tuple[str, Any]] = [
         {
             "room_id": "00000000-0000-0000-0000-000000000001",
             "agent_pubkey": pk_for(SK2_HEX),
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -94,6 +98,7 @@ CANONICAL_INPUTS: list[tuple[str, Any]] = [
         {
             "room_id": "00000000-0000-0000-0000-000000000001",
             "summary": "shipped.",
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -101,6 +106,7 @@ CANONICAL_INPUTS: list[tuple[str, Any]] = [
         {
             "room_id": "00000000-0000-0000-0000-000000000001",
             "summary": None,
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -110,7 +116,7 @@ CANONICAL_INPUTS: list[tuple[str, Any]] = [
             "turn_n": 1,
             "author_pubkey": pk_for(SK1_HEX),
             "body": "what's the timeline?",
-            "created_at": "2026-04-24T12:00:00+00:00",
+            "created_at": FIXED_TS,
         },
     ),
 ]
@@ -144,6 +150,7 @@ SIGNATURE_INPUTS: list[tuple[str, str, Any]] = [
             "invite_pubkeys": [pk_for(SK2_HEX)],
             "max_turns": 40,
             "ttl_hours": 24,
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -152,6 +159,7 @@ SIGNATURE_INPUTS: list[tuple[str, str, Any]] = [
         {
             "room_id": "00000000-0000-0000-0000-000000000001",
             "agent_pubkey": pk_for(SK2_HEX),
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -160,6 +168,7 @@ SIGNATURE_INPUTS: list[tuple[str, str, Any]] = [
         {
             "room_id": "00000000-0000-0000-0000-000000000001",
             "summary": "shipped.",
+            "created_at": FIXED_TS,
         },
     ),
     (
@@ -170,7 +179,7 @@ SIGNATURE_INPUTS: list[tuple[str, str, Any]] = [
             "turn_n": 1,
             "author_pubkey": pk_for(SK1_HEX),
             "body": "what's the timeline?",
-            "created_at": "2026-04-24T12:00:00+00:00",
+            "created_at": FIXED_TS,
         },
     ),
 ]

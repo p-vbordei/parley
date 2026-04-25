@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -10,6 +11,7 @@ class RoomCreateRequest(BaseModel):
     invite_pubkeys: list[str] = Field(min_length=0)
     max_turns: int = Field(default=40, ge=1, le=1000)
     ttl_hours: int = Field(default=24, ge=1, le=720)
+    created_at: datetime  # in signed payload; enforces freshness, defeats capture-and-replay
     sig: str  # hex
 
 
@@ -47,7 +49,8 @@ class RoomOut(BaseModel):
 
 
 class AcceptRequest(BaseModel):
-    sig: str  # hex over canonical {room_id, agent_pubkey}
+    created_at: datetime
+    sig: str  # hex over canonical {room_id, agent_pubkey, created_at}
 
 
 class AcceptResponse(BaseModel):
@@ -58,7 +61,8 @@ class AcceptResponse(BaseModel):
 
 class CloseRequest(BaseModel):
     summary: str | None = None
-    sig: str  # hex over canonical body sans sig
+    created_at: datetime
+    sig: str  # hex over canonical {room_id, summary, created_at}
 
 
 class CloseResponse(BaseModel):

@@ -9,10 +9,11 @@
         "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394"
       ],
       "max_turns": 40,
-      "ttl_hours": 24
+      "ttl_hours": 24,
+      "created_at": "2026-04-24T12:00:00+00:00"
     },
-    "canonical_bytes_utf8": "{\"invite_pubkeys\":[\"8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394\"],\"max_turns\":40,\"topic\":\"auth-ui integration\",\"ttl_hours\":24}",
-    "expected_sig_hex": "6faf5b34672d5d18fc83b47cfa386912258a3d043284a550dcaccf4c5ac2e503f046125e760c0a4186745c648cbad90a4f87534a8bbb76f9e5db043f59069706"
+    "canonical_bytes_utf8": "{\"created_at\":\"2026-04-24T12:00:00+00:00\",\"invite_pubkeys\":[\"8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394\"],\"max_turns\":40,\"topic\":\"auth-ui integration\",\"ttl_hours\":24}",
+    "expected_sig_hex": "c7e22f01cb643968680524fa04f6d0d6dde648fdc628901cebee4b5afb85ac6486e88d75e853d99adac12fc84eadef258d883341f6dda482a9347d0e5998120a"
   },
   {
     "name": "accept_sig_sk2",
@@ -20,10 +21,11 @@
     "pk_hex": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
     "payload": {
       "room_id": "00000000-0000-0000-0000-000000000001",
-      "agent_pubkey": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394"
+      "agent_pubkey": "8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394",
+      "created_at": "2026-04-24T12:00:00+00:00"
     },
-    "canonical_bytes_utf8": "{\"agent_pubkey\":\"8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394\",\"room_id\":\"00000000-0000-0000-0000-000000000001\"}",
-    "expected_sig_hex": "ab16d73e7519a0e9a08a8e3b780dbc84c95d9056dacd345f646db54c1d6ff9fd5f98dce021e2273863caf7ddb3b73a8dfa9d9e2f16bf99730fe486993b3a8905"
+    "canonical_bytes_utf8": "{\"agent_pubkey\":\"8139770ea87d175f56a35466c34c7ecccb8d8a91b4ee37a25df60f5b8fc9b394\",\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\"}",
+    "expected_sig_hex": "86368ad85776bef2bed28881a803d3fe721f3d2debcfbc75b97abbdd0142a11f27040e8cf2f0e2e2df1bbed56fbf67a6bcd7d7e51bb559b8fb148a118ac50604"
   },
   {
     "name": "close_sig_sk1",
@@ -31,10 +33,11 @@
     "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
     "payload": {
       "room_id": "00000000-0000-0000-0000-000000000001",
-      "summary": "shipped."
+      "summary": "shipped.",
+      "created_at": "2026-04-24T12:00:00+00:00"
     },
-    "canonical_bytes_utf8": "{\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"summary\":\"shipped.\"}",
-    "expected_sig_hex": "8e1caecac6f2dd4dd6ef9c0f01c089f9c5a59a8f7c70fe35c68486638d35919d1fb6833c455e4edf6a7704ed0646e7565599eef879ada635735e47a31b7f6501"
+    "canonical_bytes_utf8": "{\"created_at\":\"2026-04-24T12:00:00+00:00\",\"room_id\":\"00000000-0000-0000-0000-000000000001\",\"summary\":\"shipped.\"}",
+    "expected_sig_hex": "05edab9538d5c0e1401eb4e83eb1d8b855b6c099d2be08a7d20a8b6ac6b667633866526734c9916de5f6c4045f444f6cb2ec1ea0ef72ed0168a7dfa99ae1ef0b"
   },
   {
     "name": "post_message_sig_sk1",

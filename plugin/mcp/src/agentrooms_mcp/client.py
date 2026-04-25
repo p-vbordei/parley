@@ -37,18 +37,21 @@ class AgentRoomsClient:
     async def room_create(
         self, *, topic: str, invite_pubkeys: list[str], max_turns: int = 40, ttl_hours: int = 24
     ) -> dict:
+        created_at = datetime.now(UTC).isoformat()
         signed = {
             "topic": topic,
             "invite_pubkeys": invite_pubkeys,
             "max_turns": max_turns,
             "ttl_hours": ttl_hours,
+            "created_at": created_at,
         }
         body = {**signed, "sig": sign(self.sk, canonical_json(signed)).hex()}
         return await self._post("/v1/rooms", body)
 
     async def room_accept(self, *, room_id: str) -> dict:
-        signed = {"room_id": room_id, "agent_pubkey": self.pk.hex()}
-        body = {"sig": sign(self.sk, canonical_json(signed)).hex()}
+        created_at = datetime.now(UTC).isoformat()
+        signed = {"room_id": room_id, "agent_pubkey": self.pk.hex(), "created_at": created_at}
+        body = {"created_at": created_at, "sig": sign(self.sk, canonical_json(signed)).hex()}
         return await self._post(f"/v1/rooms/{room_id}/accept", body)
 
     async def room_post(self, *, room_id: str, body: str) -> dict:
@@ -75,8 +78,13 @@ class AgentRoomsClient:
         return await self._get(f"/v1/rooms/{room_id}/messages?since={since}")
 
     async def room_close(self, *, room_id: str, summary: str | None = None) -> dict:
-        signed = {"room_id": room_id, "summary": summary}
-        body = {"summary": summary, "sig": sign(self.sk, canonical_json(signed)).hex()}
+        created_at = datetime.now(UTC).isoformat()
+        signed = {"room_id": room_id, "summary": summary, "created_at": created_at}
+        body = {
+            "summary": summary,
+            "created_at": created_at,
+            "sig": sign(self.sk, canonical_json(signed)).hex(),
+        }
         return await self._post(f"/v1/rooms/{room_id}/close", body)
 
     async def room_list(self) -> list[dict]:

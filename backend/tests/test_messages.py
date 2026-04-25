@@ -9,7 +9,7 @@ def _hdr(pk: bytes) -> dict[str, str]:
     return {"X-Agent-Pubkey": pk.hex()}
 
 
-def _sign_create(sk, *, topic, invitees, max_turns=40, ttl_hours=24):
+def _sign_create(sk, *, topic, invitees, max_turns=40, ttl_hours=24, created_at):
     return sign(
         sk,
         canonical_json(
@@ -18,6 +18,7 @@ def _sign_create(sk, *, topic, invitees, max_turns=40, ttl_hours=24):
                 "invite_pubkeys": invitees,
                 "max_turns": max_turns,
                 "ttl_hours": ttl_hours,
+                "created_at": created_at,
             }
         ),
     ).hex()
@@ -38,9 +39,25 @@ def _sign_message(sk, *, room_id, turn_n, author_pk, body, created_at):
     ).hex()
 
 
-def _sign_accept(sk, *, room_id, agent_pk):
+def _sign_accept(sk, *, room_id, agent_pk, created_at):
     return sign(
-        sk, canonical_json({"room_id": str(room_id), "agent_pubkey": agent_pk.hex()})
+        sk,
+        canonical_json(
+            {
+                "room_id": str(room_id),
+                "agent_pubkey": agent_pk.hex(),
+                "created_at": created_at,
+            }
+        ),
+    ).hex()
+
+
+def _sign_close(sk, *, room_id, summary, created_at):
+    return sign(
+        sk,
+        canonical_json(
+            {"room_id": str(room_id), "summary": summary, "created_at": created_at}
+        ),
     ).hex()
 
 
@@ -49,20 +66,28 @@ async def _bootstrap_room(client, *, max_turns=40):
     sk_a, pk_a = generate_keypair()
     sk_b, pk_b = generate_keypair()
 
+    created_at = datetime.now(UTC).isoformat()
     create_body = {
         "topic": "t",
         "invite_pubkeys": [pk_b.hex()],
         "max_turns": max_turns,
         "ttl_hours": 24,
-        "sig": _sign_create(sk_a, topic="t", invitees=[pk_b.hex()], max_turns=max_turns),
+        "created_at": created_at,
+        "sig": _sign_create(
+            sk_a, topic="t", invitees=[pk_b.hex()], max_turns=max_turns, created_at=created_at
+        ),
     }
     r = await client.post("/v1/rooms", json=create_body, headers=_hdr(pk_a))
     assert r.status_code == 200, r.text
     room_id = r.json()["room_id"]
 
+    accept_at = datetime.now(UTC).isoformat()
     r = await client.post(
         f"/v1/rooms/{room_id}/accept",
-        json={"sig": _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b)},
+        json={
+            "created_at": accept_at,
+            "sig": _sign_accept(sk_b, room_id=room_id, agent_pk=pk_b, created_at=accept_at),
+        },
         headers=_hdr(pk_b),
     )
     assert r.status_code == 200, r.text
@@ -172,10 +197,11 @@ async def test_outsider_cannot_poll(client):
 async def test_post_blocked_after_close(client):
     sk_a, pk_a, _, _, room_id = await _bootstrap_room(client)
     # Close as creator
-    sig = sign(sk_a, canonical_json({"room_id": room_id, "summary": None})).hex()
+    close_at = datetime.now(UTC).isoformat()
+    sig = _sign_close(sk_a, room_id=room_id, summary=None, created_at=close_at)
     r = await client.post(
         f"/v1/rooms/{room_id}/close",
-        json={"summary": None, "sig": sig},
+        json={"summary": None, "created_at": close_at, "sig": sig},
         headers=_hdr(pk_a),
     )
     assert r.status_code == 200

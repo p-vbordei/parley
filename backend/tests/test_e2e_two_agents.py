@@ -21,6 +21,7 @@ async def test_two_agents_full_conversation(client):
         "invite_pubkeys": [pk_b.hex()],
         "max_turns": 40,
         "ttl_hours": 24,
+        "created_at": datetime.now(UTC).isoformat(),
     }
     create_sig = sign(sk_a, canonical_json(create_payload)).hex()
     r = await client.post(
@@ -32,11 +33,17 @@ async def test_two_agents_full_conversation(client):
     assert room["turn_owner_pubkey"] == pk_a.hex()
 
     # 2. Bob accepts.
+    accept_at = datetime.now(UTC).isoformat()
     accept_sig = sign(
-        sk_b, canonical_json({"room_id": room_id, "agent_pubkey": pk_b.hex()})
+        sk_b,
+        canonical_json(
+            {"room_id": room_id, "agent_pubkey": pk_b.hex(), "created_at": accept_at}
+        ),
     ).hex()
     r = await client.post(
-        f"/v1/rooms/{room_id}/accept", json={"sig": accept_sig}, headers=_hdr(pk_b)
+        f"/v1/rooms/{room_id}/accept",
+        json={"created_at": accept_at, "sig": accept_sig},
+        headers=_hdr(pk_b),
     )
     assert r.status_code == 200, r.text
 
@@ -81,12 +88,24 @@ async def test_two_agents_full_conversation(client):
         assert r.json()["next_turn_owner_pubkey"] == next_owner.hex()
 
     # 6. Alice closes with summary.
+    close_at = datetime.now(UTC).isoformat()
     close_sig = sign(
-        sk_a, canonical_json({"room_id": room_id, "summary": "shipped JWT decision"})
+        sk_a,
+        canonical_json(
+            {
+                "room_id": room_id,
+                "summary": "shipped JWT decision",
+                "created_at": close_at,
+            }
+        ),
     ).hex()
     r = await client.post(
         f"/v1/rooms/{room_id}/close",
-        json={"summary": "shipped JWT decision", "sig": close_sig},
+        json={
+            "summary": "shipped JWT decision",
+            "created_at": close_at,
+            "sig": close_sig,
+        },
         headers=_hdr(pk_a),
     )
     assert r.status_code == 200, r.text
