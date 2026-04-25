@@ -3,14 +3,13 @@
 Checkpoint after v0.1.0. Read top-down — items are roughly in the order
 you'd want to do them.
 
-State at this point: **60 tests green**, 25 conformance vectors green,
-[`SPEC.md`](../SPEC.md) **v0.2.0 DRAFT** published with TOC, CI workflow
+State at this point: **61 tests green**, 25 conformance vectors green,
+[`SPEC.md`](../SPEC.md) **v0.3.0 DRAFT** published with TOC, CI workflow
 committed, end-to-end demo working via `scripts/demo.sh`, full
-documentation suite (concepts, use-cases, security-model, doc index),
-**five edge-case bugs fixed in v0.2.1** (naive datetime → 500, dup
-invitees → 500, close on TTL-expired → wrong status, accept on
-closed/expired → wrong status). `v0.1.0`, `v0.2.0`, and `v0.2.1` tags
-exist locally, **none pushed**.
+documentation suite. Five edge-case bugs fixed in v0.2.1; v0.3.0 closed
+the last v0.2 §10.2 boundary via server-side seen-hash dedup on
+`create_room`. `v0.1.0`, `v0.2.0`, `v0.2.1`, and `v0.3.0` tags exist
+locally, **none pushed**.
 
 ## 0 · Before anything else — you, not me
 
@@ -75,15 +74,18 @@ Closed the v0.1.0 gap. `created_at` now in the signed payload of
 replay residual on `create_room` documented in SPEC §10.2 — see v0.3
 follow-up below.
 
-### 2a' · Server-side seen-hash dedup (v0.3, small)
+### 2a' · ~~Server-side seen-hash dedup~~ — SHIPPED in v0.3.0
 
-Closes the within-window residual that v0.2.0 left. Hash the canonical
-signed bytes of incoming `create_room` requests; reject duplicates seen
-in the freshness window. Trivial state (one hash table with TTL of 60s),
-trivial code, finishes the §10.2 story.
+Closed the within-window replay residual on `create_room` via a
+60s-rolling SHA-256 set in
+[`backend/src/agentrooms/services/dedup.py`](../backend/src/agentrooms/services/dedup.py).
+The §10.2 entry is gone.
 
-*Effort: ~half a day.*
-*Risk: low — additive, no wire-format change.*
+### 2a'' · Multi-worker dedup backing store (v0.3.x or v0.4)
+
+The v0.3 dedup is in-process. A multi-worker uvicorn deployment would
+need a shared store (Redis, or a 60s-TTL Postgres table). Not blocking
+single-worker prod; revisit when ops asks.
 
 ### 2b · Signed `GET` requests (medium)
 

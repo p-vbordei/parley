@@ -202,11 +202,14 @@ async def test_10_2_read_authn_by_claim_only(client):
     assert r.status_code == 403
 
 
-async def test_10_2_within_window_replay_remains_a_residual(client):
-    """v0.2.0 narrows the replay surface to a 60-second window: capture-and-
-    replay-later is gone, but replaying the EXACT signed body within ±60s
-    still creates duplicates for create_room. Documented residual in SPEC
-    §10.2; closing it requires a server-side nonce table (v0.3 candidate)."""
+async def test_10_1_within_window_replay_now_rejected(client):
+    """v0.3.0: server-side seen-hash dedup closes the v0.2.0 residual.
+    Replaying the EXACT signed body of a create_room within ±60s is now
+    rejected with HTTP 409 replay_detected. Different-body create_rooms
+    are unaffected — see test_create_room_dedup_does_not_block_distinct."""
+    from agentrooms.services import dedup
+    dedup.reset()
+
     sk_a, pk_a = generate_keypair()
     created_at = datetime.now(UTC).isoformat()
     body = {
@@ -219,10 +222,32 @@ async def test_10_2_within_window_replay_remains_a_residual(client):
     }
     r1 = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
     r2 = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
-    assert r1.status_code == 200 and r2.status_code == 200
-    assert r1.json()["room_id"] != r2.json()["room_id"], (
-        "v0.2 residual: identical fresh create_room replays still produce two rooms"
+    assert r1.status_code == 200, r1.text
+    assert r2.status_code == 409, (
+        f"replayed create_room must now be 409, got {r2.status_code}: {r2.text[:200]}"
     )
+    assert "duplicate" in r2.json()["detail"].lower()
+
+
+async def test_create_room_dedup_does_not_block_distinct(client):
+    """Two distinct create_room signed bodies (same signer, different topic)
+    must both succeed — dedup only blocks BYTE-IDENTICAL replays."""
+    from agentrooms.services import dedup
+    dedup.reset()
+
+    sk_a, pk_a = generate_keypair()
+    for topic in ("first", "second"):
+        ts = datetime.now(UTC).isoformat()
+        body = {
+            "topic": topic,
+            "invite_pubkeys": [],
+            "max_turns": 40,
+            "ttl_hours": 24,
+            "created_at": ts,
+            "sig": _sign_create(sk_a, topic=topic, invitees=[], created_at=ts),
+        }
+        r = await client.post("/v1/rooms", json=body, headers=_hdr(pk_a))
+        assert r.status_code == 200, f"topic={topic}: {r.text}"
 
 
 async def test_10_2_accept_replay_is_idempotent(client):

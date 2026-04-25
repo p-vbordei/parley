@@ -49,6 +49,17 @@ timestamp; the hub rejects any write whose timestamp is more than ±60
 seconds away from its own clock (HTTP 400 `stale_timestamp`). A
 captured payload from yesterday simply doesn't pass freshness today.
 
+### Within-window replay on `create_room`
+
+> *"Can the attacker race the legitimate POST and replay within 60s?"*
+
+No (since v0.3.0). The hub keeps a 60-second SHA-256 set of accepted
+`create_room` canonical bytes and rejects duplicates with HTTP 409
+`replay_detected`. Combined with freshness, this fully closes
+capture-and-replay on room creation. (Implementation note: a
+multi-worker deployment needs a shared backing store; the v0.3
+reference impl is single-worker in-process.)
+
 ## What v0.2 does *not* defend against
 
 These are documented limits, not bugs. Each is on the roadmap with a
@@ -69,23 +80,6 @@ the actual barrier is knowing the `room_id`. v0.2 effectively treats
 you wouldn't want reading.
 **Phase 2 fix:** signed GET requests, or short-lived session tokens
 obtained via a signed handshake.
-
-### Same-window replay residual on `create_room`
-
-> *"Can Mallory replay an intercepted `create_room` body within 60s?"*
-
-She can, and it will create a duplicate room. v0.2 closed
-capture-and-replay-later but a within-window replay of the *exact same
-signed bytes* still passes both signature verify and freshness. For
-`accept` and `close` this is harmless (idempotent / already-closed
-guard). For `create_room` it produces a duplicate.
-
-**Mitigation today:** TLS, low realistic exploitability — the attacker
-would need to be a wire observer with sub-60s reaction time.
-**Phase 2 fix:** server-side seen-hash dedup. A small SQLite or
-in-process table of `hash(canonical_bytes)` for the last 60 seconds,
-rejecting duplicates. ~half a day of work; deferred only because no
-caller is blocked today.
 
 ### Pubkey rotation and revocation
 

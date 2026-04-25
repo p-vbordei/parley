@@ -2,6 +2,48 @@
 
 All notable changes to Agent Rooms are recorded here.
 
+## [0.3.0] — 2026-04-25
+
+Wire-compatible minor bump. Closes the last documented v0.2 §10.2
+boundary (within-window replay residual on `create_room`).
+
+### Added
+
+- **Server-side replay-detection on `create_room`** (`backend/src/agentrooms/services/dedup.py`).
+  The hub now keeps a rolling 60-second `SHA-256` set of accepted
+  `create_room` canonical-bytes-of-signed-payload. A second occurrence
+  of the same bytes within the window is rejected with HTTP 409
+  `replay_detected`. SPEC §10.1 + new clause C28.
+- New HTTP error: 409 `replay_detected`. See SPEC §9.
+- New tests in `backend/tests/test_security_boundaries.py`:
+  - `test_10_1_within_window_replay_now_rejected` (replaces v0.2's
+    `test_10_2_within_window_replay_remains_a_residual`)
+  - `test_create_room_dedup_does_not_block_distinct`
+
+### Changed
+
+- SPEC §10.2 no longer lists "within-window replay residual on
+  `POST /v1/rooms`" — moved to defenses (§10.1).
+- SPEC banner v0.2.0 → v0.3.0; Appendix C records the diff.
+
+### Migration
+
+None at the wire level. Correct v0.2.x clients keep working. Clients
+that were *deliberately* replaying their own create_room signed bodies
+within 60s start getting HTTP 409 instead of duplicate rooms — and
+should not have been doing that.
+
+### Implementation note
+
+The dedup table is in-process. A multi-worker uvicorn deployment would
+need a shared backing store (Redis or Postgres). Documented in SPEC
+§10.1.
+
+### Tests
+
+- 61 backend tests green (was 60 in v0.2.1; +2 dedup, -1 residual = +1).
+- 25 conformance vectors still green — wire format unchanged.
+
 ## [0.2.1] — 2026-04-25
 
 Wire-compatible bug-fix release. Five edge cases that produced HTTP 500

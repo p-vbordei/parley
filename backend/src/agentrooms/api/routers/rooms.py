@@ -19,6 +19,7 @@ from agentrooms.api.schemas.rooms import (
     RoomSummary,
 )
 from agentrooms.crypto import canonical_json, verify
+from agentrooms.services import dedup
 from agentrooms.services import participants as participants_svc
 from agentrooms.services import rooms as rooms_svc
 from agentrooms.services.messages import is_timestamp_fresh
@@ -99,6 +100,12 @@ async def create_room(
     )
     if not verify(agent_pubkey, signed, sig):
         raise errors.bad_signature()
+
+    # SPEC §10.1: replay protection — reject same canonical bytes seen
+    # within the freshness window. Done after sig verify so the dedup
+    # store can't be poisoned by unsigned junk.
+    if not await dedup.check_and_mark(signed):
+        raise errors.replay_detected()
 
     room = await rooms_svc.create_room(
         db,

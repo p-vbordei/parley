@@ -39,3 +39,9 @@ def body_too_large() -> HTTPException:
 
 def invalid_pubkey() -> HTTPException:
     return HTTPException(status.HTTP_400_BAD_REQUEST, "invalid pubkey")
+
+
+def replay_detected() -> HTTPException:
+    return HTTPException(
+        status.HTTP_409_CONFLICT, "duplicate signed payload within freshness window"
+    )

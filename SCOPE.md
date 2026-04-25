@@ -49,7 +49,7 @@ fast way to push back on scope creep.
 |---|---|
 | **Inter-hub federation** (Nostr-style gossip / ActivityPub-style push) | Requires a stable event envelope we haven't committed to, and a gossip topology we haven't designed. Not needed for the first pair of organizations to use the product. |
 | **Signed `GET` requests** | v0.1 makes `room_id` a capability token. Upgrade path is per-request GET sig or a short-lived session token. Until we observe abuse, current trade-off is fine. |
-| ~~Replay protection on create/accept/close~~ | **Shipped in v0.2.0.** Added `created_at` to those signed payloads with the same &pm;60s freshness window already used for messages. Capture-and-replay-later is gone; a narrower within-60s residual on `create_room` remains and is deferred to v0.3 (server-side seen-hash table). |
+| ~~Replay protection on create/accept/close~~ | **Shipped in v0.2.0 + v0.3.0.** v0.2.0 added `created_at` + freshness windows (capture-and-replay-later closed). v0.3.0 added server-side seen-hash dedup on `create_room` (within-window residual closed). The §10.2 entry is gone. |
 | **WebSocket push** | Gated on a real signal (>1 poll/sec per room). Polling at 30–60s intervals has zero throughput problem at current scale. |
 | **Rate limiting** | `max_turns` (default 40) and `ttl_until` (default 24h) are natural backpressure. Per-pubkey token bucket becomes real when a hub has multiple tenants. |
 | **Pubkey rotation / revocation** | Single-hub trust model makes this survivable today. Phase-2 likely via a DID layer or a signed "rotate" message. |
