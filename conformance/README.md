@@ -68,6 +68,147 @@ If all three pass, your implementation is byte-compatible with the
 Agent Rooms wire format at the cryptographic layer. The state-machine
 clauses (C11–C24) still need their own per-language tests.
 
+## Cookbook: same checks in three other languages
+
+These are *sketches* — they show the shape of the runner in each
+language, not a tested artifact. The JSON vectors are the contract; the
+code below is the obvious-but-unverified equivalent. PRs welcome with
+real runners.
+
+### TypeScript + Bun + `@noble/ed25519`
+
+```ts
+import { readFileSync } from "node:fs";
+import { ed25519 } from "@noble/curves/ed25519";
+
+const canonicalJson = (obj: unknown): Uint8Array =>
+  // Sorted keys + no whitespace + no \u escapes — match SPEC §4.
+  // For a real impl, walk the tree and use a stable JSON.stringify
+  // replacer; the one-liner here is illustrative.
+  new TextEncoder().encode(
+    JSON.stringify(obj, Object.keys(obj as object).sort())
+  );
+
+const cv = JSON.parse(readFileSync("vectors/canonical_json.json", "utf8"));
+for (const v of cv) {
+  const got = new TextDecoder().decode(canonicalJson(v.input));
+  if (got !== v.expected_bytes_utf8) throw new Error(`canonical[${v.name}]`);
+}
+
+const sv = JSON.parse(readFileSync("vectors/signatures.json", "utf8"));
+for (const v of sv) {
+  const sk = Uint8Array.from(Buffer.from(v.sk_hex, "hex"));
+  const sig = ed25519.sign(new TextEncoder().encode(v.canonical_bytes_utf8), sk);
+  if (Buffer.from(sig).toString("hex") !== v.expected_sig_hex)
+    throw new Error(`sig[${v.name}]`);
+}
+
+console.log("OK");
+```
+
+### Rust + `ed25519-dalek` + `serde_json`
+
+```rust
+use ed25519_dalek::{Signature, SigningKey, Verifier, VerifyingKey};
+use serde_json::Value;
+use std::fs;
+
+fn canonical(v: &Value) -> Vec<u8> {
+    // SPEC §4: sorted keys at every level, no whitespace, UTF-8.
+    // For a real impl, write a recursive serializer; serde_json::to_vec
+    // is NOT canonical out of the box. See the `canonical_json` crate.
+    todo!("see SPEC §4")
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    for v in serde_json::from_slice::<Vec<Value>>(
+        &fs::read("vectors/canonical_json.json")?,
+    )? {
+        let got = canonical(&v["input"]);
+        let want = v["expected_bytes_utf8"].as_str().unwrap().as_bytes();
+        assert_eq!(&got, want, "canonical[{}]", v["name"]);
+    }
+
+    for v in serde_json::from_slice::<Vec<Value>>(
+        &fs::read("vectors/signatures.json")?,
+    )? {
+        let sk_bytes: [u8; 32] = hex::decode(v["sk_hex"].as_str().unwrap())?
+            .try_into().unwrap();
+        let sk = SigningKey::from_bytes(&sk_bytes);
+        let sig = sk.sign(v["canonical_bytes_utf8"].as_str().unwrap().as_bytes());
+        assert_eq!(hex::encode(sig.to_bytes()), v["expected_sig_hex"]);
+    }
+    Ok(())
+}
+```
+
+### Go + `golang.org/x/crypto/ed25519`
+
+```go
+package main
+
+import (
+    "crypto/ed25519"
+    "encoding/hex"
+    "encoding/json"
+    "os"
+)
+
+func canonical(v interface{}) []byte {
+    // SPEC §4: sorted keys, no whitespace, UTF-8.
+    // encoding/json sorts map keys by default but emits whitespace.
+    // For a real impl, post-process or use a canonical-JSON library.
+    panic("see SPEC §4")
+}
+
+func main() {
+    raw, _ := os.ReadFile("vectors/canonical_json.json")
+    var cv []map[string]interface{}
+    _ = json.Unmarshal(raw, &cv)
+    for _, v := range cv {
+        got := canonical(v["input"])
+        want := v["expected_bytes_utf8"].(string)
+        if string(got) != want {
+            panic("canonical[" + v["name"].(string) + "]")
+        }
+    }
+
+    raw, _ = os.ReadFile("vectors/signatures.json")
+    var sv []map[string]interface{}
+    _ = json.Unmarshal(raw, &sv)
+    for _, v := range sv {
+        skBytes, _ := hex.DecodeString(v["sk_hex"].(string))
+        sk := ed25519.NewKeyFromSeed(skBytes)
+        sig := ed25519.Sign(sk, []byte(v["canonical_bytes_utf8"].(string)))
+        if hex.EncodeToString(sig) != v["expected_sig_hex"].(string) {
+            panic("sig[" + v["name"].(string) + "]")
+        }
+    }
+}
+```
+
+### The hard part is canonical-JSON, not the crypto
+
+Note the `todo!()` / `panic` placeholders for `canonical()` in Rust and
+Go: most JSON libraries are *not* byte-exact-canonical out of the box.
+You'll need either a JCS-compatible library or a small recursive
+serializer that:
+
+1. Sorts object keys lexicographically by UTF-16 code point at every
+   nesting level.
+2. Uses `,` and `:` separators with no surrounding whitespace.
+3. Emits non-ASCII characters as literal UTF-8 bytes (not `\u` escaped).
+4. Doesn't normalize numbers (the SPEC forbids floats in signed
+   payloads).
+
+The Python reference is six lines:
+```python
+json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+```
+In other languages it's a 30–50 line recursive walk. The
+`canonical_json.json` vectors will tell you immediately if you've gotten
+it right.
+
 ## Regenerating vectors
 
 Only when the SPEC changes:

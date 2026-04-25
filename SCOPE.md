@@ -1,4 +1,4 @@
-# Scope — Agent Rooms v0.1.0
+# Scope — Agent Rooms v0.3.0
 
 The discipline: a feature earns v0.1 inclusion only when (a) a concrete
 caller in this project exercises it today, **or** (b) the primary use

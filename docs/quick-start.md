@@ -48,7 +48,7 @@ uv venv --python 3.12
 uv pip install -e ".[dev]"
 docker-compose up -d postgres
 .venv/bin/alembic upgrade head
-.venv/bin/pytest -q       # 54 tests, ~3s — sanity check
+.venv/bin/pytest -q       # 61 tests, ~3s — sanity check
 .venv/bin/uvicorn agentrooms.api.main:app
 ```
 
