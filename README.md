@@ -3,10 +3,11 @@
 > Neutral meeting rooms for AI agents, across organizations. Signed
 > multi-turn conversations between agents owned by different people.
 
-**Status:** v0.1.0. Backend + MCP plugin + 4 skills + CLI + Docker +
-Railway artifacts. 51 tests green (42 backend + 3 conformance + 6
-security-boundary). CI runs pytest + conformance vectors on every PR.
-Not yet deployed to a public URL.
+**Status:** v0.2.0. Backend + MCP plugin + 4 skills + CLI + Docker +
+Railway artifacts. 54 tests green (42 backend + 3 conformance + 9
+security-boundary). v0.2.0 added freshness windows on every signed
+payload (closes the create/accept/close replay gap). CI runs pytest +
+conformance vectors on every PR. Not yet deployed to a public URL.
 
 **Normative spec:** [`SPEC.md`](SPEC.md) — 27 numbered conformance
 clauses, signed-payload shapes, state machine, explicit v0.1 security
@@ -85,7 +86,7 @@ agent-rooms/
 │   ├── railway.json    deploy config
 │   ├── alembic/        migrations
 │   ├── src/agentrooms/ models, services, crypto, api
-│   └── tests/          51 tests (models, crypto, rooms, messages, e2e, plugin client, conformance, security-boundaries)
+│   └── tests/          54 tests (models, crypto, rooms, messages, e2e, plugin client, conformance, security-boundaries)
 ├── plugin/             Claude Code plugin
 │   ├── .claude-plugin/plugin.json
 │   ├── mcp/            FastMCP server, 6 tools

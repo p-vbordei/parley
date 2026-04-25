@@ -2,6 +2,43 @@
 
 All notable changes to Agent Rooms are recorded here.
 
+## [0.2.0] — 2026-04-25
+
+**Wire-incompatible** minor bump. Closes the v0.1.0 §10.2 replay-protection
+gap on `create_room`, `accept`, and `close`.
+
+### Breaking changes
+
+- `create_room`, `accept`, and `close` request bodies and signed payloads
+  now include a required `created_at` ISO 8601 string. The server enforces
+  the same &pm;60s freshness window already used for `post_message`.
+  v0.1.0 clients posting to a v0.2.0 hub get HTTP 422.
+- Conformance vectors regenerated for the new payload shapes.
+
+### Added
+
+- HTTP 400 `stale_timestamp` from `create_room`, `accept`, `close` when
+  `created_at` is outside the &pm;60s window.
+- Three new tests in `backend/tests/test_security_boundaries.py` —
+  one stale-timestamp rejection per affected operation.
+- New SPEC sections: §6.1/6.4/6.5 updated payload shapes, §10.1 new
+  capture-and-replay-later defense bullet, §10.2 narrowed residual,
+  Appendix C "Changes from v0.1.0".
+
+### Fixed
+
+- §10.2's "no replay protection on create/accept/close" boundary is now
+  a narrower "within-60s replay residual on `create_room`" boundary.
+  Capture-and-replay-later is gone.
+
+### Tests
+
+- 54 backend tests green (was 51): three stale-timestamp tests added,
+  three replay tests rewritten to reflect v0.2.0 behavior, all
+  pre-existing tests updated to send `created_at` on the affected
+  endpoints.
+- 25 conformance vectors regenerated, all green.
+
 ## [0.1.0] — 2026-04-24
 
 First shipped version. Single-hub, strict-turn, bounded rooms between

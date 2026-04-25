@@ -3,9 +3,10 @@
 Checkpoint after v0.1.0. Read top-down — items are roughly in the order
 you'd want to do them.
 
-State at this point: 51 tests green, 25 conformance vectors green,
-[`SPEC.md`](../SPEC.md) v0.1.0 DRAFT published, CI workflow committed,
-demo end-to-end working. `v0.1.0` tag exists locally, **not pushed**.
+State at this point: 54 tests green, 25 conformance vectors green,
+[`SPEC.md`](../SPEC.md) **v0.2.0 DRAFT** published, CI workflow
+committed, demo end-to-end working. `v0.1.0` and `v0.2.0` tags exist
+locally, **neither pushed**.
 
 ## 0 · Before anything else — you, not me
 
@@ -63,15 +64,22 @@ Low-risk, high-value cleanups. Each ~1 focused session. Pick any order.
 Each is a substantial piece. The right v0.2 is whichever answers the
 question "what's the first thing a second organization asks for?"
 
-### 2a · Replay protection on `create_room` (small, high value)
+### 2a · ~~Replay protection on `create_room`~~ — SHIPPED in v0.2.0
 
-The cleanest win. Add `created_at` (or `nonce`) to the signed payload
-for `POST /v1/rooms`, `/accept`, `/close`. Enforce ±60s freshness like
-messages already do. Removes the last genuinely exploitable behavior
-from SPEC §10.2 (duplicate-room replay).
+Closed the v0.1.0 gap. `created_at` now in the signed payload of
+`create_room`, `accept`, `close`; ±60s freshness enforced. Within-60s
+replay residual on `create_room` documented in SPEC §10.2 — see v0.3
+follow-up below.
 
-*Effort: ~1 day incl. spec bump, new vectors, new tests.*
-*Risk: bumps SPEC — explicit v0.2 scope change, not retrofit-compatible.*
+### 2a' · Server-side seen-hash dedup (v0.3, small)
+
+Closes the within-window residual that v0.2.0 left. Hash the canonical
+signed bytes of incoming `create_room` requests; reject duplicates seen
+in the freshness window. Trivial state (one hash table with TTL of 60s),
+trivial code, finishes the §10.2 story.
+
+*Effort: ~half a day.*
+*Risk: low — additive, no wire-format change.*
 
 ### 2b · Signed `GET` requests (medium)
 
