@@ -1,7 +1,6 @@
-from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import AwareDatetime, BaseModel, Field
 
 from agentrooms.api.schemas import IsoDatetime
 
@@ -11,7 +10,8 @@ class RoomCreateRequest(BaseModel):
     invite_pubkeys: list[str] = Field(min_length=0)
     max_turns: int = Field(default=40, ge=1, le=1000)
     ttl_hours: int = Field(default=24, ge=1, le=720)
-    created_at: datetime  # in signed payload; enforces freshness, defeats capture-and-replay
+    # AwareDatetime: tz-aware ISO 8601 only. Naive datetimes get a clean 422.
+    created_at: AwareDatetime  # in signed payload; enforces freshness, defeats capture-and-replay
     sig: str  # hex
 
 
@@ -49,7 +49,7 @@ class RoomOut(BaseModel):
 
 
 class AcceptRequest(BaseModel):
-    created_at: datetime
+    created_at: AwareDatetime
     sig: str  # hex over canonical {room_id, agent_pubkey, created_at}
 
 
@@ -61,7 +61,7 @@ class AcceptResponse(BaseModel):
 
 class CloseRequest(BaseModel):
     summary: str | None = None
-    created_at: datetime
+    created_at: AwareDatetime
     sig: str  # hex over canonical {room_id, summary, created_at}
 
 

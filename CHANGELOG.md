@@ -2,6 +2,52 @@
 
 All notable changes to Agent Rooms are recorded here.
 
+## [0.2.1] — 2026-04-25
+
+Wire-compatible bug-fix release. Five edge cases that produced HTTP 500
+or violated SPEC §8.1 in v0.2.0 now behave correctly. No client changes
+required; correct v0.2.0 clients see only better error responses.
+
+### Fixed
+
+- **Naive datetime in `created_at` no longer crashes the hub.** Previously
+  a tz-naive ISO 8601 string (e.g. `"2026-04-25T12:00:00"`) made
+  `is_timestamp_fresh()` raise `TypeError` from
+  `(naive - aware).total_seconds()`, surfacing as HTTP 500. Schemas now
+  use Pydantic's `AwareDatetime`, rejecting naive at validation time
+  with a clean HTTP 422. SPEC §4 rule 8 makes the requirement
+  normative.
+- **Duplicate non-creator pubkeys in `invite_pubkeys` are deduped.**
+  Previously two copies of Bob's pubkey hit the
+  `uq_participants_room_agent` constraint and surfaced as HTTP 500.
+  `services/rooms.create_room` now uses a `seen` set so any duplicate
+  pubkey is silently dropped. SPEC §6.1 generalized to "all duplicates
+  MUST be silently dropped" (was: only the creator).
+- **Close on a TTL-expired room now returns 409.** SPEC §8.1 says any
+  write past `ttl_until` returns `room_closed`. The close handler used
+  to only check `status != "open"` and so let a creator "close" a
+  conceptually-expired room. Now also checks `is_expired(room)`. SPEC
+  §6.5 spells this out.
+- **Accept on a closed or TTL-expired room now returns 409.** Same
+  reasoning as above. The accept handler previously skipped the room
+  fetch entirely and would happily set `accepted_at` on a closed room.
+  SPEC §6.4 now lists the closed/expired check explicitly.
+- **Lint clean.** Four pre-existing ruff warnings (unused imports,
+  unsorted imports, one long line) cleared.
+
+### Tests
+
+- 60 backend tests green (was 54): six new edge-case tests in
+  [`backend/tests/test_edge_cases.py`](backend/tests/test_edge_cases.py),
+  one per bug, each pinned to a SPEC §.
+- 25 conformance vectors still green (wire format unchanged).
+
+### Migration
+
+None. Wire format is identical to v0.2.0. v0.2.0 clients that didn't
+hit any of the five bugs see no change. Clients that *did* hit them now
+get clearer 4xx errors instead of opaque 500s.
+
 ## [0.2.0] — 2026-04-25
 
 **Wire-incompatible** minor bump. Closes the v0.1.0 §10.2 replay-protection

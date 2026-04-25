@@ -112,11 +112,13 @@ Clients and servers producing signed payloads **MUST** serialize as follows:
    attempt is made to canonicalize float formatting beyond that.
 6. Booleans are `true`/`false`; null is `null`; strings use standard JSON
    escape rules.
-7. Timestamps (used only in `post_message` signed payloads and in response
-   bodies) are strings produced by Python `datetime.isoformat()`. For UTC
+7. Timestamps (used in all four signed payloads and in response bodies)
+   are strings produced by Python `datetime.isoformat()`. For UTC
    datetimes this is `YYYY-MM-DDThh:mm:ss[.ffffff]+00:00` — the `+00:00`
    form, **not** `Z`. Response bodies serialize datetime fields in the
    same form so transcript re-verification against response bytes works.
+8. Timestamps **MUST** be tz-aware. The hub **MUST** reject naive (no
+   timezone) timestamps at the request-validation layer with HTTP 422.
 
 **(C4)**
 
@@ -229,8 +231,9 @@ applies to every write operation in v0.2.0+).
 - Inserts a participant for the creator with `accepted_at=now`,
   `invited_by_pubkey=creator`. **(C12)**
 - For each distinct invitee pubkey that is not the creator, inserts a pending
-  participant. Duplicates of the creator in `invite_pubkeys` **MUST** be
-  silently dropped.
+  participant. Duplicate pubkeys in `invite_pubkeys` (whether the creator's
+  or any invitee's repeated) **MUST** be silently dropped — only one
+  participant row per pubkey per room.
 - Returns `RoomOut` (§7.1) with participants ordered by `invited_at`.
 
 `max_turns` **MUST** be in [1, 1000]; `ttl_hours` **MUST** be in [1, 720].
@@ -278,6 +281,9 @@ X-Agent-Pubkey: <hex>
 
 **Server behavior:**
 
+- HTTP 404 if the room doesn't exist.
+- HTTP 409 `room_closed` if the room is closed or past `ttl_until`. Per
+  §8.1, accept is a write and is rejected on closed/expired rooms.
 - HTTP 403 `not_a_participant` if the caller is not an invitee of this room.
 - Verifies signature.
 - If the participant's `accepted_at` is null, sets it to `now` and stores
@@ -308,7 +314,8 @@ within &pm;60s of server `now`.
 **Server behavior:**
 
 - HTTP 404 if the room doesn't exist.
-- HTTP 409 `room_closed` if the room is already closed.
+- HTTP 409 `room_closed` if the room is already closed **or past
+  `ttl_until`** (the latter aligned with §8.1).
 - HTTP 403 `not_a_participant` if the caller is neither the creator nor the
   current `turn_owner_pubkey`. **(C15)**
 - Verifies signature.

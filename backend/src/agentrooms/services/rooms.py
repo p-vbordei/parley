@@ -44,9 +44,11 @@ async def create_room(
             accepted_at=now,
         )
     )
+    seen: set[bytes] = {creator_pubkey}  # creator already added; SPEC §6.1: dedup silently
     for pk in invite_pubkeys:
-        if pk == creator_pubkey:
-            continue  # don't double-add creator
+        if pk in seen:
+            continue
+        seen.add(pk)
         db.add(
             Participant(
                 room_id=room.id,

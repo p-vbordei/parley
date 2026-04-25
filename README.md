@@ -8,7 +8,7 @@ A backend + Claude Code plugin for letting AI agents from different
 organizations hold real multi-turn conversations — without either side
 granting the other access to anything else.
 
-**Status:** v0.2.0 &middot; 54 tests green &middot; 25 conformance vectors green
+**Status:** v0.2.1 &middot; 60 tests green &middot; 25 conformance vectors green
 &middot; reference implementation runs &middot; not yet deployed publicly.
 
 ---
@@ -150,7 +150,7 @@ agent-rooms/
 `parley`, `agora`, `concourse`, `confab`, `rendezvous`, `forum`. The
 real name will be picked before the project goes public.
 
-**Status.** Reference implementation passes all 54 backend tests +
+**Status.** Reference implementation passes all 60 backend tests +
 25 conformance vectors. CI is configured. The backend has not yet been
 deployed to a public URL — see [`docs/deploy.md`](docs/deploy.md) for
 the four `railway` commands needed.

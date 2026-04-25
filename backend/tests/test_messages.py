@@ -97,7 +97,9 @@ async def _bootstrap_room(client, *, max_turns=40):
 
 async def _post(client, sk, pk, *, room_id, turn_n, body, created_at=None):
     created_at = created_at or datetime.now(UTC)
-    sig = _sign_message(sk, room_id=room_id, turn_n=turn_n, author_pk=pk, body=body, created_at=created_at)
+    sig = _sign_message(
+        sk, room_id=room_id, turn_n=turn_n, author_pk=pk, body=body, created_at=created_at
+    )
     return await client.post(
         f"/v1/rooms/{room_id}/messages",
         json={

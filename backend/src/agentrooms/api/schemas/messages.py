@@ -1,7 +1,6 @@
-from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import AwareDatetime, BaseModel, Field
 
 from agentrooms.api.schemas import IsoDatetime
 
@@ -9,7 +8,8 @@ from agentrooms.api.schemas import IsoDatetime
 class MessagePostRequest(BaseModel):
     turn_n: int = Field(ge=1)
     body: str = Field(min_length=1, max_length=16 * 1024)
-    created_at: datetime  # request-side: accept any valid ISO 8601; signed form must match wire
+    # AwareDatetime: tz-aware ISO 8601 only. Naive datetimes get a clean 422.
+    created_at: AwareDatetime
     sig: str  # hex over canonical {room_id, turn_n, author_pubkey, body, created_at}
 
 

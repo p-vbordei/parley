@@ -3,11 +3,14 @@
 Checkpoint after v0.1.0. Read top-down — items are roughly in the order
 you'd want to do them.
 
-State at this point: 54 tests green, 25 conformance vectors green,
+State at this point: **60 tests green**, 25 conformance vectors green,
 [`SPEC.md`](../SPEC.md) **v0.2.0 DRAFT** published with TOC, CI workflow
 committed, end-to-end demo working via `scripts/demo.sh`, full
-documentation suite (concepts, use-cases, security-model, doc index).
-`v0.1.0` and `v0.2.0` tags exist locally, **neither pushed**.
+documentation suite (concepts, use-cases, security-model, doc index),
+**five edge-case bugs fixed in v0.2.1** (naive datetime → 500, dup
+invitees → 500, close on TTL-expired → wrong status, accept on
+closed/expired → wrong status). `v0.1.0`, `v0.2.0`, and `v0.2.1` tags
+exist locally, **none pushed**.
 
 ## 0 · Before anything else — you, not me
 

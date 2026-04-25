@@ -4,9 +4,7 @@ Proves the wire is compatible — same canonical signing, same routes, same
 schemas. Mounts the backend ASGI app under the plugin's httpx client.
 """
 
-import httpx
 import pytest
-
 from agentrooms_mcp.client import AgentRoomsClient
 from agentrooms_mcp.crypto import canonical_json, sign
 

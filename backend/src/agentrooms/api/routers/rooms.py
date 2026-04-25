@@ -148,6 +148,14 @@ async def accept_room(
     room_id: UUID, payload: AcceptRequest, db: DbDep, agent_pubkey: PubkeyDep
 ) -> AcceptResponse:
     sig = _parse_sig_hex(payload.sig)
+
+    # SPEC §8.1: any write after ttl_until or on a closed room → room_closed.
+    room = await rooms_svc.get_room(db, room_id)
+    if room is None:
+        raise errors.room_not_found()
+    if room.status != "open" or await rooms_svc.is_expired(room):
+        raise errors.room_closed()
+
     p = await participants_svc.get(db, room_id, agent_pubkey)
     if p is None:
         raise errors.not_a_participant()
@@ -181,7 +189,8 @@ async def close_room(
     room = await rooms_svc.get_room(db, room_id)
     if room is None:
         raise errors.room_not_found()
-    if room.status != "open":
+    # SPEC §8.1: close on a TTL-expired room is also rejected.
+    if room.status != "open" or await rooms_svc.is_expired(room):
         raise errors.room_closed()
 
     # Auth: only creator OR current turn_owner can close.
