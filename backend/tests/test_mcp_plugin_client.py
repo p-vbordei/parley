@@ -1,14 +1,14 @@
-"""Integration test: agentrooms_mcp.client.AgentRoomsClient ↔ backend FastAPI app.
+"""Integration test: parley_mcp.client.AgentRoomsClient ↔ backend FastAPI app.
 
 Proves the wire is compatible — same canonical signing, same routes, same
 schemas. Mounts the backend ASGI app under the plugin's httpx client.
 """
 
 import pytest
-from agentrooms_mcp.client import AgentRoomsClient
-from agentrooms_mcp.crypto import canonical_json, sign
+from parley_mcp.client import AgentRoomsClient
+from parley_mcp.crypto import canonical_json, sign
 
-pytest.importorskip("agentrooms_mcp")
+pytest.importorskip("parley_mcp")
 
 from nacl import signing
 
@@ -64,7 +64,7 @@ async def test_full_flow_via_plugin_client(asgi_client):
 
 def test_canonical_matches_backend():
     """Plugin's canonical_json must produce identical bytes to the backend's."""
-    from agentrooms.crypto import canonical_json as backend_canonical
+    from parley.crypto import canonical_json as backend_canonical
 
     payloads = [
         {"a": 1, "b": [2, 1, 3], "c": "ănă"},
@@ -77,7 +77,7 @@ def test_canonical_matches_backend():
 
 def test_sign_matches_backend():
     """Plugin's sign() must verify under the backend's verify()."""
-    from agentrooms.crypto import verify as backend_verify
+    from parley.crypto import verify as backend_verify
 
     sk, pk = _gen()
     msg = canonical_json({"hello": "world"})

@@ -16,18 +16,9 @@ locally, **none pushed**.
 These four items are user-owned. They need human judgement or interactive
 auth that a code-writing session cannot supply.
 
-- [ ] **Pick the real name.** `agent-rooms` is still the placeholder.
-      Candidates: `parley`, `agora`, `concourse`, `confab`, `rendezvous`,
-      `forum`. My read: **parley** — short, semantically on-point for
-      inter-party negotiation, low collision. Decide, then the rename is
-      a single focused session covering:
-      - folder: `/Users/vladbordei/Documents/Development/PERSONAL/agent-rooms/`
-      - Python packages: `agentrooms`, `agentrooms_mcp`, `agentrooms_cli`
-      - Railway service name in [`backend/railway.json`](../backend/railway.json)
-      - Docker container name in [`backend/docker-compose.yml`](../backend/docker-compose.yml)
-      - Plugin ID in [`plugin/.claude-plugin/plugin.json`](../plugin/.claude-plugin/plugin.json)
-      - Env var prefix `AGENTROOMS_` in [`backend/src/agentrooms/config.py`](../backend/src/agentrooms/config.py)
-      - Every doc / README / CHANGELOG / SCOPE reference
+- [x] **Real name: `parley`.** Renamed end-to-end in v0.3.0:
+      Python packages (`parley`, `parley_mcp`, `parley_cli`), env-var
+      prefix (`PARLEY_`), service names, plugin ID, all docs.
 
 - [ ] **`railway login && railway up`.** [`docs/deploy.md`](deploy.md)
       has the four commands. Interactive auth + your billing account —
@@ -78,7 +69,7 @@ follow-up below.
 
 Closed the within-window replay residual on `create_room` via a
 60s-rolling SHA-256 set in
-[`backend/src/agentrooms/services/dedup.py`](../backend/src/agentrooms/services/dedup.py).
+[`backend/src/parley/services/dedup.py`](../backend/src/parley/services/dedup.py).
 The §10.2 entry is gone.
 
 ### 2a'' · Multi-worker dedup backing store (v0.3.x or v0.4)

@@ -1,8 +1,8 @@
-# Agent Rooms — Prior Art Scan
+# Parley — Prior Art Scan
 
 *Date: 2026-04-24*
 *Author: external-research scan*
-*Scope: products, protocols, papers, and companies that could overlap, compete, or be borrowed from for the Agent Rooms MVP described in `docs/plans/2026-04-24-agentrooms-01-mvp.md`.*
+*Scope: products, protocols, papers, and companies that could overlap, compete, or be borrowed from for the Parley MVP described in `docs/plans/2026-04-24-parley-01-mvp.md`.*
 
 ---
 
@@ -35,7 +35,7 @@
 
 ## 1. Direct Analogues
 
-| Name | What it is | Maturity | Overlap with Agent Rooms | One-sentence diff |
+| Name | What it is | Maturity | Overlap with Parley | One-sentence diff |
 |---|---|---|---|---|
 | **Google A2A** ([site](https://a2a-protocol.org/), [GitHub](https://github.com/a2aproject/A2A)) | Open protocol for opaque agents to discover/collaborate. Ed25519/JWS-signed Agent Cards, JSON-RPC/gRPC/REST. LF-governed since June 2025. v1.2 in 2026. | Production. 150+ orgs, Microsoft/AWS/Salesforce/SAP/ServiceNow shipping. | Identity model (Ed25519 + Agent Cards), signing model, message envelope. | **Bilateral only — no rooms, no multi-party.** That's your wedge. |
 | **IBM ACP** ([IBM Research](https://research.ibm.com/projects/agent-communication-protocol), [GitHub](https://github.com/i-am-bee/acp)) | HTTP-based agent-to-agent protocol. Underlies BeeAI Platform. LF-hosted. | GA-ish (v1, May 2025). | Bilateral RPC for agents; metadata-in-package discovery. | **No multi-party rooms; designed for orchestration of containerized agents inside one operator's infra.** |
@@ -54,7 +54,7 @@
 
 **Closest direct competitor: Coral Protocol.** If you ignored crypto-tokenomics, their threaded-messaging server with mention-based targeting is what you're building. Read their arxiv paper before you freeze your message schema.
 
-**Closest *product* competitor: Slack agentic stack.** They have distribution, you have neutrality. The pitch becomes obvious: "Slack is for one org's agents; Agent Rooms is for two orgs' agents to talk without joining each other's Slack."
+**Closest *product* competitor: Slack agentic stack.** They have distribution, you have neutrality. The pitch becomes obvious: "Slack is for one org's agents; Parley is for two orgs' agents to talk without joining each other's Slack."
 
 ---
 
@@ -92,7 +92,7 @@
 
 Nostr's primitives map to yours almost 1:1. From [nostrbook.dev](https://nostrbook.dev/protocol/) and [nostr.how](https://nostr.how/en/the-protocol):
 
-| Nostr | Agent Rooms (your plan) |
+| Nostr | Parley (your plan) |
 |---|---|
 | Ed25519 keypair = identity | Ed25519 keypair = agent identity |
 | Signed event `{id, pubkey, created_at, kind, tags, content, sig}` | Signed message |
@@ -221,7 +221,7 @@ What would let a competitor leapfrog you in 6 months:
    - **Justify it explicitly** in the spec ("we enforce turn order to make multi-agent conversations debuggable and to prevent loop attacks") and own it as a differentiator, *or*
    - **Drop it** in favor of "any participant can post anytime, clients decide when to act." The latter is closer to how every other system in this scan operates.
 6. **Polling vs WS subscriptions.** Nostr proved at scale that long-lived WS subscriptions (`REQ`/`EVENT`/`EOSE`) are cheaper than HTTP polling for this exact event-stream-with-filter shape. HTTP polling gives you Cloudflare-cacheable simplicity but at 10× the request volume. Reconsider before public launch — this isn't an MVP-blocker but is a poor permanent choice.
-7. **`~/.kin/` reuse is a great distribution play but a fragile coupling.** If Kindred ever changes its key derivation (HD wallet path, post-quantum migration), Agent Rooms breaks. Document the contract: "Agent Rooms reads `~/.kin/agent.key` (raw Ed25519 seed, 32 bytes). Any other format is undefined behavior." Get this written down so a future Kindred change is a deliberate breaking change, not a silent break.
+7. **`~/.kin/` reuse is a great distribution play but a fragile coupling.** If Kindred ever changes its key derivation (HD wallet path, post-quantum migration), Parley breaks. Document the contract: "Parley reads `~/.kin/agent.key` (raw Ed25519 seed, 32 bytes). Any other format is undefined behavior." Get this written down so a future Kindred change is a deliberate breaking change, not a silent break.
 
 ### Drop / don't build
 

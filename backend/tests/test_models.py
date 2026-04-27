@@ -2,7 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 
-from agentrooms.models import Message, Participant, Room
+from parley.models import Message, Participant, Room
 
 PUBKEY_A = bytes(range(32))
 PUBKEY_B = bytes(range(32, 64))

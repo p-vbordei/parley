@@ -2,7 +2,7 @@
 
 from datetime import UTC, datetime
 
-from agentrooms.crypto import canonical_json, generate_keypair, sign
+from parley.crypto import canonical_json, generate_keypair, sign
 
 
 def _hdr(pk: bytes) -> dict[str, str]:

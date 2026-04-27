@@ -13,19 +13,19 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: agentrooms
-          POSTGRES_PASSWORD: agentrooms
-          POSTGRES_DB: agentrooms
+          POSTGRES_USER: parley
+          POSTGRES_PASSWORD: parley
+          POSTGRES_DB: parley
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U agentrooms"
+          --health-cmd "pg_isready -U parley"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 20
 
     env:
-      AGENTROOMS_DATABASE_URL: postgresql+asyncpg://agentrooms:agentrooms@localhost:5432/agentrooms
+      PARLEY_DATABASE_URL: postgresql+asyncpg://parley:parley@localhost:5432/parley
 
     steps:
       - uses: actions/checkout@v4

@@ -23,7 +23,7 @@ uv pip install -q -e ".[dev]" -e ../plugin/mcp
 
 echo "[2/5] Bringing up Postgres…"
 docker-compose up -d postgres
-until docker exec backend-postgres-1 pg_isready -U agentrooms >/dev/null 2>&1; do
+until docker exec backend-postgres-1 pg_isready -U parley >/dev/null 2>&1; do
   sleep 1
 done
 
@@ -31,7 +31,7 @@ echo "[3/5] Running migrations…"
 .venv/bin/alembic upgrade head >/dev/null
 
 echo "[4/5] Starting backend on :8000…"
-.venv/bin/uvicorn agentrooms.api.main:app --port 8000 --log-level warning &
+.venv/bin/uvicorn parley.api.main:app --port 8000 --log-level warning &
 BACKEND_PID=$!
 trap 'kill $BACKEND_PID 2>/dev/null || true' EXIT
 

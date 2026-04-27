@@ -14,8 +14,8 @@ from uuid import UUID
 
 from sqlalchemy import update
 
-from agentrooms.crypto import canonical_json, generate_keypair, sign
-from agentrooms.models import Room
+from parley.crypto import canonical_json, generate_keypair, sign
+from parley.models import Room
 
 
 def _hdr(pk: bytes) -> dict[str, str]:

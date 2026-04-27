@@ -1,15 +1,49 @@
 # Changelog
 
-All notable changes to Agent Rooms are recorded here.
+All notable changes to Parley are recorded here.
 
-## [0.3.0] — 2026-04-25
+## [0.3.0] — 2026-04-27
 
-Wire-compatible minor bump. Closes the last documented v0.2 §10.2
-boundary (within-window replay residual on `create_room`).
+First public release. Wire-compatible from v0.2.x at the protocol
+layer. Three things ship together: the seen-hash dedup that closes the
+last v0.2 §10.2 boundary, the project rename, and the licenses needed
+to publish.
 
-### Added
+### Renamed (breaking at the package-name level, not on the wire)
 
-- **Server-side replay-detection on `create_room`** (`backend/src/agentrooms/services/dedup.py`).
+- Project name: **agent-rooms → parley.** A parley is a meeting between
+  adversaries under truce to negotiate — semantically on-point.
+- PyPI packages: `agentrooms` → **`parley`**, `agentrooms-mcp` →
+  **`parley-mcp`**, `agentrooms-cli` → **`parley-cli`**.
+- Python modules: `agentrooms` → **`parley`**, `agentrooms_mcp` →
+  **`parley_mcp`**, `agentrooms_cli` → **`parley_cli`**.
+- Env-var prefix: `AGENTROOMS_` → **`PARLEY_`** (e.g.
+  `PARLEY_DATABASE_URL`).
+- Service / container / Postgres user names updated accordingly.
+- Wire format unchanged — `created_at` / signed payloads / canonical
+  bytes all identical to v0.2.0.
+
+### Licensed
+
+- **Apache-2.0** at the repo root: covers the protocol artifacts
+  (SPEC, `conformance/`, `plugin/`, `cli/`, `examples/`, all docs).
+- **AGPL-3.0-or-later** in [`backend/LICENSE`](backend/LICENSE):
+  overrides for the hub implementation.
+- Same split-and-reasoning as Kindred: protocol stays permissive to
+  encourage adoption, hub gets the network-redistribution clause to
+  keep modified deployments open.
+- License files included in each wheel.
+
+### PyPI metadata polish
+
+- Each `pyproject.toml` now has `readme`, `license`, `license-files`,
+  `authors`, `keywords`, `classifiers`, full `[project.urls]`.
+- Per-package `PYPI_README.md` shipped as the long-description.
+- Wheels for all three packages build cleanly with `uv build`.
+
+### Added (the actual v0.3.0 protocol work)
+
+- **Server-side replay-detection on `create_room`** (`backend/src/parley/services/dedup.py`).
   The hub now keeps a rolling 60-second `SHA-256` set of accepted
   `create_room` canonical-bytes-of-signed-payload. A second occurrence
   of the same bytes within the window is rejected with HTTP 409
@@ -185,11 +219,11 @@ agents identified by Ed25519 keypairs. 51 tests green.
   `agentroom-summarize`, `agentroom-close`.
 - Crypto is inlined from the backend (byte-for-byte mirror) so the
   plugin installs standalone; documented to extract as
-  `agentrooms-crypto` once a third client appears.
+  `parley-crypto` once a third client appears.
 
 ### CLI (`cli/`)
 
-- `agentrooms` command with 7 subcommands for scripted testing,
+- `parley` command with 7 subcommands for scripted testing,
   depending on the plugin's client (no third crypto copy).
 - 2 smoke tests driving a real uvicorn end-to-end.
 
@@ -201,7 +235,7 @@ agents identified by Ed25519 keypairs. 51 tests green.
   second implementation can validate itself against the same JSON
   files.
 - `backend/tests/test_conformance.py` replays the same vectors through
-  `agentrooms.crypto` to catch drift.
+  `parley.crypto` to catch drift.
 
 ### Security boundaries (`backend/tests/test_security_boundaries.py`)
 
@@ -224,7 +258,7 @@ agents identified by Ed25519 keypairs. 51 tests green.
 - `README.md` with research-driven positioning vs A2A / ACP / ANP /
   AGNTCY / Coral / Nostr / MCP.
 - `docs/quick-start.md` — 5-minute install-and-first-room path.
-- `docs/plans/2026-04-24-agentrooms-01-mvp.md` — the plan all 10 tasks
+- `docs/plans/2026-04-24-parley-01-mvp.md` — the plan all 10 tasks
   shipped against.
 - `docs/research/2026-04-24-prior-art-scan.md` — external research.
 - `examples/demo.py` — two agents exchanging three turns, ~20 lines.
@@ -245,4 +279,4 @@ agents identified by Ed25519 keypairs. 51 tests green.
 
 - `railway up` deploy (interactive; account-bound).
 - End-to-end trigger-phrase verification in a real Claude Code session.
-- Picking the real product name (`agent-rooms` is a placeholder).
+- Picking the real product name (`parley` is a placeholder).

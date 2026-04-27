@@ -5,8 +5,8 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from agentrooms.config import settings
-from agentrooms.models import Base
+from parley.config import settings
+from parley.models import Base
 
 
 @pytest_asyncio.fixture
@@ -50,8 +50,8 @@ async def client(engine, clean_db) -> AsyncIterator[AsyncClient]:
     dependency so the app uses that engine instead of the module-level one
     (which would be bound to whichever event loop happened to import db.py).
     """
-    from agentrooms.api.deps import get_db
-    from agentrooms.api.main import app
+    from parley.api.deps import get_db
+    from parley.api.main import app
 
     TestSession = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 

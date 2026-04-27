@@ -1,13 +1,32 @@
 [project]
-name = "agentrooms-mcp"
-version = "0.1.0"
-description = "MCP server for Agent Rooms — exposes 6 tools to Claude Code"
+name = "parley-mcp"
+version = "0.3.0"
+description = "MCP server for Parley — exposes 6 tools to Claude Code (room_create / accept / post / poll / close / list)"
+readme = "PYPI_README.md"
 requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Vlad Bordei", email = "vlad@nuit.ro" }]
+keywords = ["agents", "ai", "ed25519", "mcp", "claude-code", "plugin"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Communications",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
 dependencies = [
     "mcp>=1.0",
     "httpx>=0.27",
     "pynacl>=1.5",
 ]
+
+[project.urls]
+Homepage = "https://github.com/p-vbordei/parley"
+Repository = "https://github.com/p-vbordei/parley"
+Issues = "https://github.com/p-vbordei/parley/issues"
+Changelog = "https://github.com/p-vbordei/parley/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [
@@ -16,14 +35,14 @@ dev = [
 ]
 
 [project.scripts]
-agentrooms-mcp = "agentrooms_mcp.server:main"
+parley-mcp = "parley_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentrooms_mcp"]
+packages = ["src/parley_mcp"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

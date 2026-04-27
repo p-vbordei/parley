@@ -9,8 +9,8 @@ from what the service actually signs.
 import json
 from pathlib import Path
 
-from agentrooms.crypto import canonical_json
-from agentrooms.crypto.keys import sign, verify
+from parley.crypto import canonical_json
+from parley.crypto.keys import sign, verify
 
 VECTORS = Path(__file__).resolve().parents[2] / "conformance" / "vectors"
 

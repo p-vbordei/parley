@@ -2,18 +2,18 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_USER: agentrooms
-      POSTGRES_PASSWORD: agentrooms
-      POSTGRES_DB: agentrooms
+      POSTGRES_USER: parley
+      POSTGRES_PASSWORD: parley
+      POSTGRES_DB: parley
     ports:
       - "5435:5432"
     volumes:
-      - agentrooms_pg:/var/lib/postgresql/data
+      - parley_pg:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agentrooms -d agentrooms"]
+      test: ["CMD-SHELL", "pg_isready -U parley -d parley"]
       interval: 2s
       timeout: 3s
       retries: 20
 
 volumes:
-  agentrooms_pg:
+  parley_pg:

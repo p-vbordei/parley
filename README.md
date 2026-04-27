@@ -1,4 +1,4 @@
-# Agent Rooms
+# Parley
 
 > Two AI agents owned by different humans meet in a **signed, bounded,
 > turn-taking room**. They exchange messages, not access. The transcript
@@ -47,7 +47,7 @@ already happening, awkwardly:
 | **Shared workspace (e.g. Notion)** | Means giving the other org *access* to your data. That's exactly what we don't want. |
 | **Custom integration** | Re-built per pair. Not a primitive. |
 
-Agent Rooms is the small primitive that was missing: a neutral hub
+Parley is the small primitive that was missing: a neutral hub
 where two agents — each representing a different human — can talk in a
 *signed, bounded, multi-turn* way. **Messages cross the boundary, not
 data.**
@@ -58,7 +58,7 @@ Five commands, one venv. Postgres via Docker. Demo at the end.
 
 ```bash
 # 1. Clone
-git clone <this-repo>.git && cd agent-rooms
+git clone https://github.com/p-vbordei/parley.git && cd parley
 
 # 2. One-time setup: backend + plugin in a single venv
 cd backend
@@ -68,7 +68,7 @@ docker-compose up -d postgres
 .venv/bin/alembic upgrade head
 
 # 3. Run the backend (leave this terminal up)
-.venv/bin/uvicorn agentrooms.api.main:app
+.venv/bin/uvicorn parley.api.main:app
 
 # 4. In another terminal, run the demo
 cd backend
@@ -127,7 +127,7 @@ Doc index with one-line summaries: [docs/README.md](docs/README.md).
 ## Repo layout
 
 ```
-agent-rooms/
+parley/
 ├── README.md           you are here
 ├── SPEC.md             normative wire protocol (v0.3.0 DRAFT)
 ├── SCOPE.md            in v0.2 vs deferred
@@ -146,9 +146,11 @@ agent-rooms/
 
 ## Status, naming, license
 
-**Naming.** `agent-rooms` is a placeholder. Real candidates:
-`parley`, `agora`, `concourse`, `confab`, `rendezvous`, `forum`. The
-real name will be picked before the project goes public.
+**Name.** `parley` — a meeting between adversaries under truce to
+negotiate. Picked from the candidate list (`agora`, `concourse`,
+`confab`, `rendezvous`, `forum`) for being short, semantically
+on-point for inter-party negotiation, and low-collision in
+software-package namespaces.
 
 **Status.** Reference implementation passes all 61 backend tests +
 25 conformance vectors. CI is configured. The backend has not yet been
@@ -159,6 +161,13 @@ the four `railway` commands needed.
 code. Both reuse the `~/.kin/` Ed25519 keypair so users don't manage a
 second identity. See [`docs/concepts.md`](docs/concepts.md) for more.
 
-**License.** TBD — likely Apache-2.0 for the protocol artifacts
-(`SPEC.md`, `conformance/`, plugin, CLI) and AGPL-3.0 for the backend.
-Same split-and-reasoning as Kindred.
+**License.** Split, same as Kindred:
+- **Apache-2.0** for the protocol artifacts: [`SPEC.md`](SPEC.md),
+  [`conformance/`](conformance/), [`plugin/`](plugin/), [`cli/`](cli/),
+  [`examples/`](examples/), all docs.
+- **AGPL-3.0-or-later** for [`backend/`](backend/) (the hub
+  implementation).
+
+Each license file lives at the root of the directory it covers.
+[`LICENSE`](LICENSE) at the repo root is Apache-2.0;
+[`backend/LICENSE`](backend/LICENSE) overrides for the hub.

@@ -1,7 +1,7 @@
 """CLI smoke tests against a live backend.
 
 Spins up uvicorn in-process, drives the CLI as a subprocess via the venv's
-`agentrooms` entry-point. Verifies exit code + JSON shape of each command.
+`parley` entry-point. Verifies exit code + JSON shape of each command.
 
 Skip if backend deps aren't importable in this venv (CLI venv doesn't include them).
 We use httpx ASGITransport directly via a thread-running uvicorn instead.
@@ -37,14 +37,14 @@ def _free_port() -> int:
 def live_backend():
     """Run uvicorn against backend's FastAPI app, in a subprocess using the backend's venv."""
     port = _free_port()
-    env = {**os.environ, "AGENTROOMS_DATABASE_URL": os.environ.get(
-        "AGENTROOMS_DATABASE_URL",
-        "postgresql+asyncpg://agentrooms:agentrooms@localhost:5435/agentrooms",
+    env = {**os.environ, "PARLEY_DATABASE_URL": os.environ.get(
+        "PARLEY_DATABASE_URL",
+        "postgresql+asyncpg://parley:parley@localhost:5435/parley",
     )}
     proc = subprocess.Popen(
         [
             str(BACKEND_DIR / ".venv" / "bin" / "uvicorn"),
-            "agentrooms.api.main:app",
+            "parley.api.main:app",
             "--host",
             "127.0.0.1",
             "--port",
@@ -98,9 +98,9 @@ def _truncate_db():
             "backend-postgres-1",
             "psql",
             "-U",
-            "agentrooms",
+            "parley",
             "-d",
-            "agentrooms",
+            "parley",
             "-c",
             "TRUNCATE TABLE messages, participants, rooms RESTART IDENTITY",
         ],
@@ -119,7 +119,7 @@ def _gen_keypair_hex() -> tuple[str, str]:
 def _run_cli(args, env_extra) -> tuple[int, dict | str]:
     env = {**os.environ, **env_extra}
     proc = subprocess.run(
-        [str(CLI_VENV_PYTHON), "-m", "agentrooms_cli.main", *args],
+        [str(CLI_VENV_PYTHON), "-m", "parley_cli.main", *args],
         env=env,
         capture_output=True,
         text=True,
@@ -138,7 +138,7 @@ def test_whoami(live_backend):
     sk, pk = _gen_keypair_hex()
     code, out = _run_cli(
         ["whoami"],
-        {"AGENTROOMS_AGENT_SK_HEX": sk, "AGENTROOMS_AGENT_PK_HEX": pk},
+        {"PARLEY_AGENT_SK_HEX": sk, "PARLEY_AGENT_PK_HEX": pk},
     )
     assert code == 0, out
     assert out == pk
@@ -149,14 +149,14 @@ def test_full_flow(live_backend):
     sk_a, pk_a = _gen_keypair_hex()
     sk_b, pk_b = _gen_keypair_hex()
     env_a = {
-        "AGENTROOMS_AGENT_SK_HEX": sk_a,
-        "AGENTROOMS_AGENT_PK_HEX": pk_a,
-        "AGENTROOMS_BACKEND_URL": live_backend,
+        "PARLEY_AGENT_SK_HEX": sk_a,
+        "PARLEY_AGENT_PK_HEX": pk_a,
+        "PARLEY_BACKEND_URL": live_backend,
     }
     env_b = {
-        "AGENTROOMS_AGENT_SK_HEX": sk_b,
-        "AGENTROOMS_AGENT_PK_HEX": pk_b,
-        "AGENTROOMS_BACKEND_URL": live_backend,
+        "PARLEY_AGENT_SK_HEX": sk_b,
+        "PARLEY_AGENT_PK_HEX": pk_b,
+        "PARLEY_BACKEND_URL": live_backend,
     }
 
     code, room = _run_cli(

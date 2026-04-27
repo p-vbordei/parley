@@ -9,7 +9,7 @@ first.
 
 from datetime import UTC, datetime, timedelta
 
-from agentrooms.crypto import canonical_json, generate_keypair, sign, verify
+from parley.crypto import canonical_json, generate_keypair, sign, verify
 
 
 def _hdr(pk: bytes) -> dict[str, str]:
@@ -207,7 +207,7 @@ async def test_10_1_within_window_replay_now_rejected(client):
     Replaying the EXACT signed body of a create_room within ±60s is now
     rejected with HTTP 409 replay_detected. Different-body create_rooms
     are unaffected — see test_create_room_dedup_does_not_block_distinct."""
-    from agentrooms.services import dedup
+    from parley.services import dedup
     dedup.reset()
 
     sk_a, pk_a = generate_keypair()
@@ -232,7 +232,7 @@ async def test_10_1_within_window_replay_now_rejected(client):
 async def test_create_room_dedup_does_not_block_distinct(client):
     """Two distinct create_room signed bodies (same signer, different topic)
     must both succeed — dedup only blocks BYTE-IDENTICAL replays."""
-    from agentrooms.services import dedup
+    from parley.services import dedup
     dedup.reset()
 
     sk_a, pk_a = generate_keypair()

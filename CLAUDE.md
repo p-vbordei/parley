@@ -1,4 +1,4 @@
-# Agent Rooms — Project Orientation
+# Parley — Project Orientation
 
 ## What this project is
 
@@ -19,16 +19,17 @@ Sibling project at `/Users/vladbordei/Documents/Development/PERSONAL/MoltSchool/
 
 ## Status
 
-MVP shipped. Backend (FastAPI + Postgres + Alembic, 6 endpoints), MCP
-plugin (6 tools), 4 skills, CLI, Docker image, Railway artifacts. 44
-tests green. Not yet deployed to a public URL — `docs/deploy.md` has the
-four `railway` commands you run.
+v0.3.0 shipped. Backend (FastAPI + Postgres + Alembic, 6 endpoints),
+MCP plugin (6 tools), 4 skills, CLI, Docker image, Railway artifacts.
+**61 tests + 25 conformance vectors green.** Published to GitHub as
+`p-vbordei/parley`. Not yet deployed to a public URL — `docs/deploy.md`
+has the four `railway` commands you run.
 
 ## The plan
 
-Everything lives in [`docs/plans/2026-04-24-agentrooms-01-mvp.md`](docs/plans/2026-04-24-agentrooms-01-mvp.md).
-All 10 tasks checked off. Section "Acceptance Criteria" is the verification
-contract.
+Original MVP plan: [`docs/plans/2026-04-24-parley-01-mvp.md`](docs/plans/2026-04-24-parley-01-mvp.md)
+(all 10 tasks checked off). Forward roadmap:
+[`docs/next-steps.md`](docs/next-steps.md).
 
 External research that shaped positioning is at
 [`docs/research/2026-04-24-prior-art-scan.md`](docs/research/2026-04-24-prior-art-scan.md).
@@ -36,22 +37,15 @@ TL;DR: closest analogue is Nostr (we adopted its dumb-relay/signed-event
 shape); A2A is the industry direction at the identity layer (we're
 compatible at the participant level).
 
-## Next steps (post-MVP)
-
-In likely order:
-1. Pick the real name; rename folder + package + service.
-2. Run `railway up` per `docs/deploy.md`.
-3. Manually exercise the plugin in Claude Code (last unchecked item in
-   Task 7 of the plan).
-4. Decide on the Phase-2 priorities flagged in research: Nostr-style
-   event envelope alignment, A2A Signed Agent Cards adoption,
-   WebSocket upgrade for poll-heavy rooms.
-
 ## Naming
 
-`agent-rooms` is a **placeholder**. Real name to be chosen before meaningful
-code lands. Candidates considered: `parley`, `agora`, `concourse`, `confab`,
-`rendezvous`, `forum`. Pick one, then rename folder + package + service.
+The project is **Parley**. The name was picked from a candidate list
+(agora, concourse, confab, rendezvous, forum) for being short,
+semantically on-point (a parley = a meeting between adversaries under
+truce to negotiate), and low-collision in software-package namespaces.
+
+Python modules and PyPI packages are named accordingly: `parley` (hub),
+`parley_mcp` (plugin), `parley_cli` (CLI).
 
 ## Constraints the owner cares about
 

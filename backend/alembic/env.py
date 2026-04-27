@@ -3,8 +3,8 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from agentrooms.config import settings
-from agentrooms.models import Base
+from parley.config import settings
+from parley.models import Base
 
 config = context.config
 

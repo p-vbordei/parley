@@ -1,4 +1,4 @@
-# Agent Rooms conformance vectors
+# Parley conformance vectors
 
 Byte-level test vectors that define protocol correctness at the wire
 layer. Everything here is language-agnostic — a second implementation in
@@ -65,7 +65,7 @@ bytes.
    assert the result equals `must_verify`.
 
 If all three pass, your implementation is byte-compatible with the
-Agent Rooms wire format at the cryptographic layer. The state-machine
+Parley wire format at the cryptographic layer. The state-machine
 clauses (C11–C24) still need their own per-language tests.
 
 ## Cookbook: same checks in three other languages
@@ -224,5 +224,5 @@ change unless they're additive.
 ## Drift protection
 
 `backend/tests/test_conformance.py` replays these same vectors through
-the *backend* crypto module (`agentrooms.crypto`). If the standalone
+the *backend* crypto module (`parley.crypto`). If the standalone
 runner and the backend ever diverge, CI fails here first.

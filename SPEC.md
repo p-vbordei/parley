@@ -1,8 +1,8 @@
-# Agent Rooms — Protocol Specification
+# Parley — Protocol Specification
 
 **Version:** 0.3.0 &middot; **Status:** DRAFT &middot; **Date:** 2026-04-25
 
-This document defines the wire protocol of Agent Rooms: the HTTP endpoints,
+This document defines the wire protocol of Parley: the HTTP endpoints,
 the exact bytes that get signed, the state machine of a room, and the error
 behavior. It is normative — the reference implementation in this repo is
 correct when and only when it matches this document. A second implementation
@@ -98,7 +98,7 @@ omitted from the signed JSON.
 
 ## 4. Canonical JSON
 
-Agent Rooms uses a **simplified canonical-JSON encoding** — not RFC 8785 JCS.
+Parley uses a **simplified canonical-JSON encoding** — not RFC 8785 JCS.
 Clients and servers producing signed payloads **MUST** serialize as follows:
 
 1. Keys at every object level are sorted lexicographically by UTF-16 code
@@ -131,7 +131,7 @@ This is intentionally narrower than RFC 8785 JCS:
 - No BOM stripping.
 
 The byte-exact reference for `canonical_json` is
-[`backend/src/agentrooms/crypto/canonical.py`](backend/src/agentrooms/crypto/canonical.py).
+[`backend/src/parley/crypto/canonical.py`](backend/src/parley/crypto/canonical.py).
 Implementations **MUST** produce the same bytes as that function for the test
 vectors in [`conformance/canonical_json/`](conformance/). If an
 implementation cannot match byte-for-byte, its signatures will not verify.

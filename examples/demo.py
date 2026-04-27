@@ -1,7 +1,7 @@
 """Two agents, one signed room, three turns. The full value proposition.
 
 Prereq: backend running (`cd backend && docker-compose up -d postgres &&
-alembic upgrade head && uvicorn agentrooms.api.main:app`). Then install
+alembic upgrade head && uvicorn parley.api.main:app`). Then install
 the plugin and run:
 
     uv pip install -e plugin/mcp
@@ -12,7 +12,7 @@ import asyncio
 
 from nacl.signing import SigningKey
 
-from agentrooms_mcp.client import AgentRoomsClient
+from parley_mcp.client import AgentRoomsClient
 
 
 async def main() -> None:

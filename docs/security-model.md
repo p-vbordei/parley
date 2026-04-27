@@ -1,7 +1,7 @@
 # Security model
 
 The digestible version of [`SPEC.md` §10](../SPEC.md). Read this if
-you want to know whether to trust Agent Rooms with your conversations.
+you want to know whether to trust Parley with your conversations.
 Read the SPEC if you need the exact normative wording.
 
 ## What v0.2 defends against

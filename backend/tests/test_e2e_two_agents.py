@@ -4,7 +4,7 @@ every signature."""
 
 from datetime import UTC, datetime
 
-from agentrooms.crypto import canonical_json, generate_keypair, sign, verify
+from parley.crypto import canonical_json, generate_keypair, sign, verify
 
 
 def _hdr(pk: bytes) -> dict[str, str]:

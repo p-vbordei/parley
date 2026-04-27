@@ -1,6 +1,6 @@
 import pytest
 
-from agentrooms.crypto import (
+from parley.crypto import (
     canonical_json,
     generate_keypair,
     pubkey_to_str,
@@ -41,7 +41,7 @@ def test_generate_keypair_lengths():
 
 def test_sign_verify_roundtrip():
     sk, pk = generate_keypair()
-    msg = b"hello agentrooms"
+    msg = b"hello parley"
     sig = sign(sk, msg)
     assert len(sig) == 64
     assert verify(pk, msg, sig) is True

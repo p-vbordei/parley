@@ -1,8 +1,8 @@
-# Agent Rooms MVP — Implementation Plan (01/??)
+# Parley MVP — Implementation Plan (01/??)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Livrează MVP-ul pentru Agent Rooms — un backend separat de Kindred care permite agenților AI deținuți de oameni / organizații diferite să țină conversații multi-turn într-o „cameră" cu mesaje semnate criptografic. La sfârșit: doi oameni din orgs diferite își pot porni agenții lor Claude într-o cameră comună, schimbă 5-10 replici, închid, primesc transcriptul semnat.
+**Goal:** Livrează MVP-ul pentru Parley — un backend separat de Kindred care permite agenților AI deținuți de oameni / organizații diferite să țină conversații multi-turn într-o „cameră" cu mesaje semnate criptografic. La sfârșit: doi oameni din orgs diferite își pot porni agenții lor Claude într-o cameră comună, schimbă 5-10 replici, închid, primesc transcriptul semnat.
 
 **Architecture:** Hub centralizat (nu federat în MVP). FastAPI async + Postgres 16. Agenți se autentifică prin semnături Ed25519 pe fiecare request (reutilizează cheia din `~/.kin/` a Kindred). Mesajele sunt append-only, ordered prin `turn_n`, semnate de autor. Turn-taking prin `turn_owner` în room state — doar un singur agent poate posta la un moment dat. Polling (nu push) pentru new messages.
 
@@ -25,7 +25,7 @@
 ## File Structure
 
 ```
-agent-rooms/
+parley/
 ├── README.md
 ├── backend/
 │   ├── pyproject.toml
@@ -38,7 +38,7 @@ agent-rooms/
 │   ├── alembic/
 │   │   ├── env.py
 │   │   └── versions/
-│   ├── src/agentrooms/
+│   ├── src/parley/
 │   │   ├── __init__.py
 │   │   ├── config.py                        # Pydantic settings
 │   │   ├── db.py                            # async engine + session
@@ -80,7 +80,7 @@ agent-rooms/
 │   ├── plugin.json
 │   ├── mcp/
 │   │   ├── pyproject.toml
-│   │   └── src/agentrooms_mcp/
+│   │   └── src/parley_mcp/
 │   │       ├── __init__.py
 │   │       ├── server.py                    # MCP server
 │   │       └── tools.py                     # 6 tools
@@ -91,7 +91,7 @@ agent-rooms/
 │       └── agentroom-close.md
 └── cli/
     ├── pyproject.toml
-    └── src/agentrooms_cli/
+    └── src/parley_cli/
         ├── __init__.py
         ├── main.py                          # argparse entrypoint
         └── commands/
@@ -350,7 +350,7 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 1 — Scaffold + data model
 
-- [x] Create `agent-rooms/backend/` skeleton: `pyproject.toml`, `Dockerfile`, `docker-compose.yml`, `alembic.ini`.
+- [x] Create `parley/backend/` skeleton: `pyproject.toml`, `Dockerfile`, `docker-compose.yml`, `alembic.ini`.
 - [x] Write models: `Room`, `Participant`, `Message`.
 - [x] Write first Alembic migration: 3 tables + indexes.
 - [x] `tests/test_models.py`: roundtrip each model.
@@ -404,22 +404,22 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 
 ### Task 8 — CLI (optional, for scripted testing without Claude)
 
-- [x] `cli/src/agentrooms_cli/main.py`: argparse.
+- [x] `cli/src/parley_cli/main.py`: argparse.
 - [x] Commands: `room create`, `room list`, `room show`, `room accept`, `room post`, `room poll`, `room close` + `whoami`.
 - [x] `tests/test_cli_smoke.py`: smoke test each command against a live dev backend.
 
 ### Task 9 — Deploy
 
-- [x] Add `agent-rooms` service to Railway project (separate service, separate domain). **Artifacts ready** — `railway.json` + Dockerfile + `docs/deploy.md`. Vlad runs the four `railway` CLI commands (login is interactive).
-- [x] Env vars: `AGENTROOMS_DATABASE_URL` documented in `docs/deploy.md`.
+- [x] Add `parley` service to Railway project (separate service, separate domain). **Artifacts ready** — `railway.json` + Dockerfile + `docs/deploy.md`. Vlad runs the four `railway` CLI commands (login is interactive).
+- [x] Env vars: `PARLEY_DATABASE_URL` documented in `docs/deploy.md`.
 - [x] Railway healthcheck on `/v1/healthz` (in `railway.json`).
 - [x] Deploy smoke test: ran the built Docker image locally against the dev Postgres, hit `/v1/healthz` → 200. Smoke against prod waits for the human deploy step.
 
 ### Task 10 — Docs
 
-- [x] Update `agent-rooms/README.md` with real URLs and quick start.
-- [x] Add `agent-rooms/docs/quick-start.md`.
-- [ ] Link from top-level `README.md` as a sibling product. **Skipped intentionally** — agent-rooms is a separate repo from Kindred per CLAUDE.md ("No Kindred code is modified as part of this plan"). When the two products are positioned together in a portfolio README, link from there.
+- [x] Update `parley/README.md` with real URLs and quick start.
+- [x] Add `parley/docs/quick-start.md`.
+- [ ] Link from top-level `README.md` as a sibling product. **Skipped intentionally** — parley is a separate repo from Kindred per CLAUDE.md ("No Kindred code is modified as part of this plan"). When the two products are positioned together in a portfolio README, link from there.
 
 ---
 
@@ -464,7 +464,7 @@ Comparable: a 30-min Zoom meeting between 2 engineers at $150/hr = $150. Orders 
 ## Rollback Plan
 
 If this product doesn't find traction:
-- All code lives under `agent-rooms/` — drop the folder, done.
+- All code lives under `parley/` — drop the folder, done.
 - Railway service: stop + delete; no impact on Kindred.
 - DB: separate schema / separate Postgres plugin — drop cleanly.
 - No shared runtime dependencies to unwind.

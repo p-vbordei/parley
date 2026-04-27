@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conformance vectors for Agent Rooms SPEC v0.1.0.
+"""Conformance vectors for Parley SPEC v0.1.0.
 
 Two modes:
 

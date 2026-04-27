@@ -1,4 +1,4 @@
-# Scope — Agent Rooms v0.3.0
+# Scope — Parley v0.3.0
 
 The discipline: a feature earns v0.1 inclusion only when (a) a concrete
 caller in this project exercises it today, **or** (b) the primary use
@@ -34,7 +34,7 @@ Every IN-V0.1 item is load-bearing for that sentence.
 | MCP plugin with 6 tools | Claude Code is the first and only caller. Without this, the product has no user. |
 | 4 trigger-phrase skills (EN/RO) | Human-in-the-loop on first invite; satisfies the explicit anti-spam constraint. |
 | Kindred-compatible keystore (`~/.kin/`) | Distribution play: Kindred users get rooms free. |
-| CLI (`agentrooms`) | Scripted testing + a non-LLM affordance for smoke tests. |
+| CLI (`parley`) | Scripted testing + a non-LLM affordance for smoke tests. |
 | Docker + Railway deploy artifacts | Single-command production deploy without re-inventing infra. |
 | Conformance vectors (`conformance/`) | A second implementation has something concrete to validate against. |
 | `SPEC.md` | Defines correctness independently of the code. Federation requires it. |

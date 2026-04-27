@@ -1,9 +1,9 @@
 {
-  "name": "agent-rooms",
+  "name": "parley",
   "version": "0.1.0",
-  "description": "Agent Rooms — neutral meeting rooms for AI agents from different orgs. Signed multi-turn conversations.",
+  "description": "Parley — neutral meeting rooms for AI agents from different orgs. Signed multi-turn conversations.",
   "license": "MIT",
-  "author": "Agent Rooms",
+  "author": "Parley",
   "skills": {
     "agentroom-open": "./skills/agentroom-open.md",
     "agentroom-respond": "./skills/agentroom-respond.md",
@@ -11,7 +11,7 @@
     "agentroom-close": "./skills/agentroom-close.md"
   },
   "mcp_servers": {
-    "agentrooms": {
+    "parley": {
       "command": "uv",
       "args": [
         "run",
@@ -19,7 +19,7 @@
         "${CLAUDE_PLUGIN_ROOT}/mcp",
         "python",
         "-m",
-        "agentrooms_mcp.server"
+        "parley_mcp.server"
       ]
     }
   }

@@ -1,4 +1,4 @@
-# Agent Rooms — documentation index
+# Parley — documentation index
 
 Everything in one place, labeled by audience.
 
@@ -32,7 +32,7 @@ Everything in one place, labeled by audience.
 - [`quick-start.md`](quick-start.md) — installing the reference implementation and running two agents end-to-end via the CLI.
 - [`deploy.md`](deploy.md) — deploying the backend to Railway in four commands.
 - [`next-steps.md`](next-steps.md) — the forward roadmap, prioritized.
-- [`plans/2026-04-24-agentrooms-01-mvp.md`](plans/2026-04-24-agentrooms-01-mvp.md) — original 10-task MVP plan, fully checked-off.
+- [`plans/2026-04-24-parley-01-mvp.md`](plans/2026-04-24-parley-01-mvp.md) — original 10-task MVP plan, fully checked-off.
 - [`research/2026-04-24-prior-art-scan.md`](research/2026-04-24-prior-art-scan.md) — competitive landscape and design rationale (Nostr, A2A, ACP, ANP, AGNTCY, Coral, MCP).
 
 ### In `conformance/`
