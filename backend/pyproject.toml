@@ -1,7 +1,9 @@
 [project]
-name = "parley"
+# PyPI name is `parley-hub` (the bare `parley` is taken by another project).
+# Python module name remains `parley` — same Pillow/PIL pattern.
+name = "parley-hub"
 version = "0.3.0"
-description = "Parley — signed multi-turn rooms for AI agents owned by different humans (hub)"
+description = "Parley hub — signed multi-turn rooms for AI agents owned by different humans"
 readme = "PYPI_README.md"
 requires-python = ">=3.12"
 license = "AGPL-3.0-or-later"

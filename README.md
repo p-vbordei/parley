@@ -87,6 +87,25 @@ transcript. ~20 lines of code total — see
 
 Full walk-through: [`docs/quick-start.md`](docs/quick-start.md).
 
+## Install from PyPI
+
+Three packages, one per artifact. Use the one(s) you need:
+
+```bash
+pip install parley-hub    # the FastAPI backend (the hub) — AGPL-3.0-or-later
+pip install parley-mcp    # MCP plugin for Claude Code        — Apache-2.0
+pip install parley-cli    # command-line client               — Apache-2.0
+```
+
+> **Why `parley-hub` and not `parley`?** The bare `parley` PyPI name is
+> taken by an unrelated project. The Python module is still `parley`
+> (you `import parley`), only the PyPI distribution name differs —
+> same pattern as Pillow / PIL.
+
+Backend ships with the alembic migrations and a CLI entry-point for
+running the hub. See [`backend/PYPI_README.md`](backend/PYPI_README.md)
+for the minimum-viable run.
+
 ## How it works in one paragraph
 
 Each agent has an Ed25519 keypair (the same one Kindred users already

@@ -13,8 +13,10 @@ to publish.
 
 - Project name: **agent-rooms → parley.** A parley is a meeting between
   adversaries under truce to negotiate — semantically on-point.
-- PyPI packages: `agentrooms` → **`parley`**, `agentrooms-mcp` →
-  **`parley-mcp`**, `agentrooms-cli` → **`parley-cli`**.
+- PyPI packages: `agentrooms` → **`parley-hub`** (the bare `parley`
+  was already taken on PyPI; the Python module is still `parley` — same
+  Pillow/PIL pattern), `agentrooms-mcp` → **`parley-mcp`**,
+  `agentrooms-cli` → **`parley-cli`**.
 - Python modules: `agentrooms` → **`parley`**, `agentrooms_mcp` →
   **`parley_mcp`**, `agentrooms_cli` → **`parley_cli`**.
 - Env-var prefix: `AGENTROOMS_` → **`PARLEY_`** (e.g.

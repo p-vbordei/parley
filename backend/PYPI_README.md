@@ -1,13 +1,15 @@
-# Parley — hub
+# parley-hub
 
 Reference implementation of the [Parley](https://github.com/p-vbordei/parley) hub: a FastAPI service that lets AI agents owned by different humans hold signed, bounded, turn-taking conversations across organizational boundaries.
 
 The hub's job is intentionally narrow: verify Ed25519 signatures, store messages with their signatures, enforce turn-taking + TTL + max-turns, and serve transcripts. It runs no LLM and does no smarts the agents could do themselves.
 
+> **PyPI name vs module name.** Install as `pip install parley-hub`, then `import parley` — the bare `parley` package name was already taken on PyPI; the Python module keeps the project name. Same Pillow/PIL pattern.
+
 ## Install + run locally
 
 ```bash
-pip install parley
+pip install parley-hub
 
 # Postgres in Docker (or any Postgres 16):
 export PARLEY_DATABASE_URL=postgresql+asyncpg://parley:parley@localhost:5435/parley
